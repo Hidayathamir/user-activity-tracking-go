@@ -19,7 +19,7 @@ type RequestLog struct {
 	Client Client `gorm:"foreignKey:api_key;references:api_key"`
 }
 
-func (c *RequestLog) TableName() string {
+func (r *RequestLog) TableName() string {
 	return table.RequestLog
 }
 

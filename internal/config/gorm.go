@@ -66,23 +66,23 @@ func NewDatabase(viperConfig *viper.Viper) *gorm.DB {
 
 type gormLogger struct{}
 
-func (l *gormLogger) LogMode(level logger.LogLevel) logger.Interface {
-	return l
+func (g *gormLogger) LogMode(level logger.LogLevel) logger.Interface {
+	return g
 }
 
-func (l *gormLogger) Info(ctx context.Context, msg string, data ...any) {
+func (g *gormLogger) Info(ctx context.Context, msg string, data ...any) {
 	x.Logger.WithContext(ctx).Infof(msg, data...)
 }
 
-func (l *gormLogger) Warn(ctx context.Context, msg string, data ...any) {
+func (g *gormLogger) Warn(ctx context.Context, msg string, data ...any) {
 	x.Logger.WithContext(ctx).Warnf(msg, data...)
 }
 
-func (l *gormLogger) Error(ctx context.Context, msg string, data ...any) {
+func (g *gormLogger) Error(ctx context.Context, msg string, data ...any) {
 	x.Logger.WithContext(ctx).Errorf(msg, data...)
 }
 
-func (l *gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+func (g *gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	sql, rows := fc()
 	entry := x.Logger.WithContext(ctx).WithFields(logrus.Fields{
 		"elapsed": time.Since(begin),

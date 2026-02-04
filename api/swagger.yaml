@@ -1,0 +1,173 @@
+definitions:
+  github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata:
+    properties:
+      page:
+        type: integer
+      size:
+        type: integer
+      total_item:
+        type: integer
+      total_page:
+        type: integer
+    type: object
+  ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDetail
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDetail'
+      error_detail:
+        items:
+          type: string
+        type: array
+      error_message:
+        type: string
+      paging:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
+  ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResLogin
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResLogin'
+      error_detail:
+        items:
+          type: string
+        type: array
+      error_message:
+        type: string
+      paging:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
+  ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRegister
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRegister'
+      error_detail:
+        items:
+          type: string
+        type: array
+      error_message:
+        type: string
+      paging:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqLogin:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRegister:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDetail:
+    properties:
+      api_key:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResLogin:
+    properties:
+      token:
+        type: string
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRegister:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: User Activity Tracking Go
+paths:
+  /api/client/me:
+    get:
+      consumes:
+      - application/json
+      description: Get client detail
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDetail'
+      security:
+      - ApiKeyJWTAuth: []
+      summary: Get client detail
+      tags:
+      - Client
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a client with name and password
+      parameters:
+      - description: Client Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResLogin'
+      summary: Login a client
+      tags:
+      - Client
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new client with name, email, and password
+      parameters:
+      - description: Client Registration Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRegister'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRegister'
+      summary: Register a new client
+      tags:
+      - Client
+securityDefinitions:
+  ApiKeyJWTAuth:
+    description: JWT authorization
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

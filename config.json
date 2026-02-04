@@ -1,6 +1,16 @@
 {
+  "aes": {
+    "key": "f4c4e10063fdbd822916537b778eb86d"
+  },
   "app": {
     "name": "github.com/Hidayathamir/user-activity-tracking-go"
+  },
+  "auth": {
+    "jwt": {
+      "secret": "f0227d75d7882690bda189aa2b926608",
+      "issuer": "github.com/Hidayathamir/user-activity-tracking-go",
+      "expire_seconds": 259200
+    }
   },
   "database": {
     "migrations": "db/migrations",
@@ -17,8 +27,5 @@
   },
   "log": {
     "level": "trace"
-  },
-  "web": {
-    "port": 3000
   }
 }

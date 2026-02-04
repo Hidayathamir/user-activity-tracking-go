@@ -1,7 +1,13 @@
 package configkey
 
 const (
+	AESKey = "aes.key"
+
 	AppName = "app.name"
+
+	AuthJWTSecret        = "auth.jwt.secret"
+	AuthJWTIssuer        = "auth.jwt.issuer"
+	AuthJWTExpireSeconds = "auth.jwt.expire_seconds"
 
 	DatabaseMigrations   = "database.migrations"
 	DatabaseUsername     = "database.username"
@@ -14,6 +20,4 @@ const (
 	DatabasePoolLifetime = "database.pool.lifetime"
 
 	LogLevel = "log.level"
-
-	WebPort = "web.port"
 )
