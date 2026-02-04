@@ -27,5 +27,8 @@
   },
   "log": {
     "level": "trace"
+  },
+  "redis": {
+    "address": "localhost:6379"
   }
 }

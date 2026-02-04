@@ -20,4 +20,6 @@ const (
 	DatabasePoolLifetime = "database.pool.lifetime"
 
 	LogLevel = "log.level"
+
+	RedisAddress = "redis.address"
 )

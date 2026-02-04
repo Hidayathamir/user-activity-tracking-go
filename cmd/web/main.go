@@ -20,9 +20,13 @@ import (
 func main() {
 	viperConfig := config.NewViper()
 	x.SetupAll(viperConfig)
+
 	db := config.NewDatabase(viperConfig)
 
-	usecases := config.SetupUsecases(viperConfig, db)
+	rdb := config.NewRedis(viperConfig)
+	defer x.PanicIfErr(rdb.Close())
+
+	usecases := config.SetupUsecases(viperConfig, db, rdb)
 
 	controllers := config.SetupControllers(viperConfig, usecases)
 

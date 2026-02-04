@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15
+    image: postgres:16.2
     container_name: user-activity-tracking-go-postgres
     ports:
       - "5432:5432"
@@ -8,3 +8,9 @@ services:
       POSTGRES_DB: user_activity_tracking_go
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+
+  redis:
+    image: redis:7-alpine
+    container_name: user-activity-tracking-go-redis
+    ports:
+      - "6379:6379"
