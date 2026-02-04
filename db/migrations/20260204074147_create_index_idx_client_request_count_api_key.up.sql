@@ -1,0 +1,2 @@
+create index idx_client_request_count_api_key
+ON client_request_count(api_key);

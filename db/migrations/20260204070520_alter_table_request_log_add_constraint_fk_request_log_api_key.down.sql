@@ -1,0 +1,2 @@
+alter table request_log
+drop constraint fk_request_log_api_key;

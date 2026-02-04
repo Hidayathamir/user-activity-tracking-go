@@ -1,0 +1,1 @@
+drop table client_request_count;

@@ -1,0 +1,24 @@
+{
+  "app": {
+    "name": "github.com/Hidayathamir/user-activity-tracking-go"
+  },
+  "database": {
+    "migrations": "db/migrations",
+    "username": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "name": "user_activity_tracking_go",
+    "pool": {
+      "idle": 10,
+      "max": 100,
+      "lifetime": 300
+    }
+  },
+  "log": {
+    "level": "trace"
+  },
+  "web": {
+    "port": 3000
+  }
+}

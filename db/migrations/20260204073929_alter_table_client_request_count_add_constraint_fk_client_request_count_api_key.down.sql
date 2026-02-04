@@ -1,0 +1,2 @@
+alter table client_request_count
+drop constraint fk_client_request_count_api_key;

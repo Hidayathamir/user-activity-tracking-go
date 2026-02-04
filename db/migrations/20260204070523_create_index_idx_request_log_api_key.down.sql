@@ -1,0 +1,1 @@
+drop index idx_request_log_api_key;

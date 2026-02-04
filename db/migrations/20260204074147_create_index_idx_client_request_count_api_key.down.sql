@@ -1,0 +1,1 @@
+drop index idx_client_request_count_api_key;
