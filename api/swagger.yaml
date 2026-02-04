@@ -36,6 +36,19 @@ definitions:
       paging:
         $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
     type: object
+  ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRecordAPIHit
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRecordAPIHit'
+      error_detail:
+        items:
+          type: string
+        type: array
+      error_message:
+        type: string
+      paging:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
   ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRegister
   : properties:
       data:
@@ -58,6 +71,23 @@ definitions:
     required:
     - name
     - password
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRecordAPIHit:
+    properties:
+      api_key:
+        type: string
+      endpoint:
+        type: string
+      ip:
+        type: string
+      timestamp:
+        format: date-time
+        type: string
+    required:
+    - api_key
+    - endpoint
+    - ip
+    - timestamp
     type: object
   github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRegister:
     properties:
@@ -91,6 +121,11 @@ definitions:
     properties:
       token:
         type: string
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRecordAPIHit:
+    properties:
+      ok:
+        type: boolean
     type: object
   github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRegister:
     properties:
@@ -142,6 +177,30 @@ paths:
       summary: Login a client
       tags:
       - Client
+  /api/logs:
+    post:
+      consumes:
+      - application/json
+      description: Record api hit
+      parameters:
+      - description: Record API Hit Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRecordAPIHit'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRecordAPIHit'
+      security:
+      - ApiKeyXInternalSecret: []
+      summary: Record api hit
+      tags:
+      - RequestLog
   /api/register:
     post:
       consumes:
@@ -169,5 +228,10 @@ securityDefinitions:
     description: JWT authorization
     in: header
     name: Authorization
+    type: apiKey
+  ApiKeyXInternalSecret:
+    description: X Internal Secret
+    in: header
+    name: X-Internal-Secret
     type: apiKey
 swagger: "2.0"

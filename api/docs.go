@@ -77,6 +77,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/logs": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyXInternalSecret": []
+                    }
+                ],
+                "description": "Record api hit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RequestLog"
+                ],
+                "summary": "Record api hit",
+                "parameters": [
+                    {
+                        "description": "Record API Hit Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRecordAPIHit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRecordAPIHit"
+                        }
+                    }
+                }
+            }
+        },
         "/api/register": {
             "post": {
                 "description": "Register a new client with name, email, and password",
@@ -170,6 +209,26 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRecordAPIHit": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRecordAPIHit"
+                },
+                "error_detail": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "error_message": {
+                    "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata"
+                }
+            }
+        },
         "github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResRegister": {
             "type": "object",
             "properties": {
@@ -202,6 +261,30 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqRecordAPIHit": {
+            "type": "object",
+            "required": [
+                "api_key",
+                "endpoint",
+                "ip",
+                "timestamp"
+            ],
+            "properties": {
+                "api_key": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
                 }
             }
         },
@@ -255,6 +338,14 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRecordAPIHit": {
+            "type": "object",
+            "properties": {
+                "ok": {
+                    "type": "boolean"
+                }
+            }
+        },
         "github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResRegister": {
             "type": "object",
             "properties": {
@@ -272,6 +363,12 @@ const docTemplate = `{
             "description": "JWT authorization",
             "type": "apiKey",
             "name": "Authorization",
+            "in": "header"
+        },
+        "ApiKeyXInternalSecret": {
+            "description": "X Internal Secret",
+            "type": "apiKey",
+            "name": "X-Internal-Secret",
             "in": "header"
         }
     }

@@ -20,6 +20,7 @@ func NewAuthMiddleware(clientUsecase client.ClientUsecase) gin.HandlerFunc {
 			err = errkit.Unauthorized(err)
 			err = errkit.AddFuncName(err)
 			response.Error(c, err)
+			c.Abort()
 			return
 		}
 
@@ -35,6 +36,7 @@ func NewAuthMiddleware(clientUsecase client.ClientUsecase) gin.HandlerFunc {
 			err = errkit.Unauthorized(err)
 			err = errkit.AddFuncName(err)
 			response.Error(c, err)
+			c.Abort()
 			return
 		}
 
@@ -47,6 +49,7 @@ func NewAuthMiddleware(clientUsecase client.ClientUsecase) gin.HandlerFunc {
 			err = errkit.Unauthorized(err)
 			err = errkit.AddFuncName(err)
 			response.Error(c, err)
+			c.Abort()
 			return
 		}
 

@@ -6,13 +6,16 @@ import (
 )
 
 type Controllers struct {
-	ClientController *http.ClientController
+	ClientController     *http.ClientController
+	RequestLogController *http.RequestLogController
 }
 
 func SetupControllers(viperConfig *viper.Viper, usecases *Usecases) *Controllers {
 	ClientController := http.NewClientController(viperConfig, usecases.ClientUsecase)
+	RequestLogController := http.NewRequestLogController(viperConfig, usecases.RequestLogUsecase)
 
 	return &Controllers{
-		ClientController: ClientController,
+		ClientController:     ClientController,
+		RequestLogController: RequestLogController,
 	}
 }

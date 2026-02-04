@@ -25,6 +25,9 @@
       "lifetime": 300
     }
   },
+  "kafka": {
+    "address": "localhost:9092"
+  },
   "log": {
     "level": "trace"
   },

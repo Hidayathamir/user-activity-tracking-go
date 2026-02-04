@@ -1,0 +1,65 @@
+package requestlog
+
+import (
+	"context"
+
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/gateway/messaging"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
+	"github.com/spf13/viper"
+	"gorm.io/gorm"
+)
+
+//go:generate moq -out=../../mock/MockUsecaseRequestLog.go -pkg=mock . RequestLogUsecase
+
+type RequestLogUsecase interface {
+	RecordAPIHit(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error)
+}
+
+var _ RequestLogUsecase = &RequestLogUsecaseImpl{}
+
+type RequestLogUsecaseImpl struct {
+	Config *viper.Viper
+	DB     *gorm.DB
+
+	// cache
+	Cache cache.Cache
+
+	// repository
+	RequestLogRepository         repository.RequestLogRepository
+	ClientRequestCountRepository repository.ClientRequestCountRepository
+
+	// Producer
+	Producer messaging.Producer
+}
+
+func NewRequestLogUsecase(
+	Config *viper.Viper,
+	DB *gorm.DB,
+
+	// cache
+	Cache cache.Cache,
+
+	// repository
+	RequestLogRepository repository.RequestLogRepository,
+	ClientRequestCountRepository repository.ClientRequestCountRepository,
+
+	// Producer
+	Producer messaging.Producer,
+) *RequestLogUsecaseImpl {
+	return &RequestLogUsecaseImpl{
+		Config: Config,
+		DB:     DB,
+
+		// cache
+		Cache: Cache,
+
+		// repository
+		RequestLogRepository:         RequestLogRepository,
+		ClientRequestCountRepository: ClientRequestCountRepository,
+
+		// Producer
+		Producer: Producer,
+	}
+}

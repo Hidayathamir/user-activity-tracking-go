@@ -19,6 +19,8 @@ const (
 	DatabasePoolMax      = "database.pool.max"
 	DatabasePoolLifetime = "database.pool.lifetime"
 
+	KafkaAddress = "kafka.address"
+
 	LogLevel = "log.level"
 
 	RedisAddress = "redis.address"

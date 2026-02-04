@@ -13,4 +13,6 @@ func Setup(ginEngine *gin.Engine, controllers *config.Controllers, middlewares *
 	ginEngine.POST("/api/register", controllers.ClientController.Register)
 	ginEngine.POST("/api/login", controllers.ClientController.Login)
 	ginEngine.GET("/api/client/me", middlewares.AuthMiddleware, controllers.ClientController.GetClientDetail)
+
+	ginEngine.POST("/api/logs", middlewares.InternalServiceMiddleware, controllers.RequestLogController.RecordAPIHit)
 }

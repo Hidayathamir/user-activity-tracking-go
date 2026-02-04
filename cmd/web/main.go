@@ -17,6 +17,11 @@ import (
 //	@name						Authorization
 //	@description				JWT authorization
 
+//	@securityDefinitions.apikey	ApiKeyXInternalSecret
+//	@in							header
+//	@name						X-Internal-Secret
+//	@description				X Internal Secret
+
 func main() {
 	viperConfig := config.NewViper()
 	x.SetupAll(viperConfig)
@@ -24,9 +29,12 @@ func main() {
 	db := config.NewDatabase(viperConfig)
 
 	rdb := config.NewRedis(viperConfig)
-	defer x.PanicIfErr(rdb.Close())
+	defer x.PanicIfErrForDefer(rdb.Close)
 
-	usecases := config.SetupUsecases(viperConfig, db, rdb)
+	kafkaWriter := config.NewKafkaProducer(viperConfig)
+	defer x.PanicIfErrForDefer(kafkaWriter.Close)
+
+	usecases := config.SetupUsecases(viperConfig, db, rdb, kafkaWriter)
 
 	controllers := config.SetupControllers(viperConfig, usecases)
 

@@ -37,7 +37,7 @@ generate:
 	rm -rf internal/mock &&	go generate ./internal/...
 
 swag:
-	swag fmt --exclude ./internal/mock && swag init --parseDependency --parseInternal --generalInfo ./cmd/web/main.go --output ./api/
+	rm -rf api/ && swag fmt --exclude ./internal/mock && swag init --parseDependency --parseInternal --generalInfo ./cmd/web/main.go --output ./api/
 
 check-tools:
 	@echo "🔍 Checking required tools..."

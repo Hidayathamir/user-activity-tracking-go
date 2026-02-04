@@ -6,13 +6,16 @@ import (
 )
 
 type Middlewares struct {
-	AuthMiddleware gin.HandlerFunc
+	AuthMiddleware            gin.HandlerFunc
+	InternalServiceMiddleware gin.HandlerFunc
 }
 
 func SetupMiddlewares(usecases *Usecases) *Middlewares {
 	AuthMiddleware := middleware.NewAuthMiddleware(usecases.ClientUsecase)
+	InternalServiceMiddleware := middleware.NewInternalServiceMiddleware()
 
 	return &Middlewares{
-		AuthMiddleware: AuthMiddleware,
+		AuthMiddleware:            AuthMiddleware,
+		InternalServiceMiddleware: InternalServiceMiddleware,
 	}
 }
