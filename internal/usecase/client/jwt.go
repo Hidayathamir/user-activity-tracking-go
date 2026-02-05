@@ -24,7 +24,7 @@ func (c *ClientUsecaseImpl) signAccessToken(ctx context.Context, clientName stri
 	}
 
 	issuer := c.Config.GetString(configkey.AuthJWTIssuer)
-	now := time.Now()
+	now := time.Now().UTC()
 	claims := jwt.RegisteredClaims{
 		Subject:   clientName,
 		Issuer:    issuer,

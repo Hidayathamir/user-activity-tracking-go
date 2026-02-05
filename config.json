@@ -13,7 +13,7 @@
     }
   },
   "cron": {
-    "pattern": "@every 5m"
+    "pattern": "@every 1m"
   },
   "database": {
     "migrations": "db/migrations",

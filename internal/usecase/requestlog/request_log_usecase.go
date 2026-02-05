@@ -16,6 +16,7 @@ import (
 type RequestLogUsecase interface {
 	RecordAPIHit(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error)
 	BatchConsumeClientRequestLogEvent(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error
+	GetClientDailyRequestCount(ctx context.Context, req *model.ReqGetClientDailyRequestCount) (*model.ResGetClientDailyRequestCount, error)
 	GetTop3ClientRequestCount24Hour(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error)
 }
 

@@ -44,6 +44,18 @@ func (r *RequestLogUsecaseMwLogger) BatchConsumeClientRequestLogEvent(ctx contex
 	return err
 }
 
+func (r *RequestLogUsecaseMwLogger) GetClientDailyRequestCount(ctx context.Context, req *model.ReqGetClientDailyRequestCount) (*model.ResGetClientDailyRequestCount, error) {
+	res, err := r.Next.GetClientDailyRequestCount(ctx, req)
+
+	fields := logrus.Fields{
+		"req": req,
+		"res": res,
+	}
+	x.LogMw(ctx, fields, err, layer.Usecase)
+
+	return res, err
+}
+
 func (r *RequestLogUsecaseMwLogger) GetTop3ClientRequestCount24Hour(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error) {
 	res, err := r.Next.GetTop3ClientRequestCount24Hour(ctx, req)
 

@@ -47,3 +47,14 @@ func (c *ClientRequestCountRepositoryMwLogger) GetTop3ClientRequestCount24Hour(c
 
 	return res, err
 }
+
+func (c *ClientRequestCountRepositoryMwLogger) GetCountByAPIKeyAndDate(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time) (int, error) {
+	res, err := c.Next.GetCountByAPIKeyAndDate(ctx, db, apiKey, datetime)
+
+	fields := logrus.Fields{
+		"res": res,
+	}
+	x.LogMw(ctx, fields, err, layer.Repository)
+
+	return res, err
+}

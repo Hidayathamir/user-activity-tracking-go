@@ -10,6 +10,19 @@ definitions:
       total_page:
         type: integer
     type: object
+  ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDailyRequestCount
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDailyRequestCount'
+      error_detail:
+        items:
+          type: string
+        type: array
+      error_message:
+        type: string
+      paging:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
   ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDetail
   : properties:
       data:
@@ -75,6 +88,13 @@ definitions:
       paging:
         $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
     type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.DailyCount:
+    properties:
+      count:
+        type: integer
+      date:
+        type: string
+    type: object
   github_com_Hidayathamir_user-activity-tracking-go_internal_model.NameCount:
     properties:
       count:
@@ -121,6 +141,13 @@ definitions:
     - email
     - name
     - password
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDailyRequestCount:
+    properties:
+      daily_count_list:
+        items:
+          $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.DailyCount'
+        type: array
     type: object
   github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDetail:
     properties:
@@ -250,6 +277,23 @@ paths:
       summary: Register a new client
       tags:
       - Client
+  /api/usage/daily:
+    get:
+      consumes:
+      - application/json
+      description: Get client daily request count
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDailyRequestCount'
+      security:
+      - ApiKeyJWTAuth: []
+      summary: Get client daily request count
+      tags:
+      - RequestLog
   /api/usage/top:
     get:
       consumes:

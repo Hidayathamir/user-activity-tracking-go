@@ -21,11 +21,17 @@ var _ cache.Cache = &CacheMock{}
 //
 //		// make and configure a mocked cache.Cache
 //		mockedCache := &CacheMock{
+//			GetCountByAPIKeyAndDateFunc: func(ctx context.Context, apiKey string, datetime time.Time) (int, error) {
+//				panic("mock out the GetCountByAPIKeyAndDate method")
+//			},
 //			GetTop3ClientRequestCount24HourFunc: func(ctx context.Context) (model.APIKeyCountList, error) {
 //				panic("mock out the GetTop3ClientRequestCount24Hour method")
 //			},
 //			IncrementTopClientRequestCountHourlyFunc: func(ctx context.Context, timestamp time.Time, increment int, member string) error {
 //				panic("mock out the IncrementTopClientRequestCountHourly method")
+//			},
+//			SetClientRequestCountFunc: func(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error {
+//				panic("mock out the SetClientRequestCount method")
 //			},
 //			SetClientRequestCountIfExistFunc: func(ctx context.Context, apiKey string, datetime time.Time, value int) error {
 //				panic("mock out the SetClientRequestCountIfExist method")
@@ -37,17 +43,32 @@ var _ cache.Cache = &CacheMock{}
 //
 //	}
 type CacheMock struct {
+	// GetCountByAPIKeyAndDateFunc mocks the GetCountByAPIKeyAndDate method.
+	GetCountByAPIKeyAndDateFunc func(ctx context.Context, apiKey string, datetime time.Time) (int, error)
+
 	// GetTop3ClientRequestCount24HourFunc mocks the GetTop3ClientRequestCount24Hour method.
 	GetTop3ClientRequestCount24HourFunc func(ctx context.Context) (model.APIKeyCountList, error)
 
 	// IncrementTopClientRequestCountHourlyFunc mocks the IncrementTopClientRequestCountHourly method.
 	IncrementTopClientRequestCountHourlyFunc func(ctx context.Context, timestamp time.Time, increment int, member string) error
 
+	// SetClientRequestCountFunc mocks the SetClientRequestCount method.
+	SetClientRequestCountFunc func(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error
+
 	// SetClientRequestCountIfExistFunc mocks the SetClientRequestCountIfExist method.
 	SetClientRequestCountIfExistFunc func(ctx context.Context, apiKey string, datetime time.Time, value int) error
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetCountByAPIKeyAndDate holds details about calls to the GetCountByAPIKeyAndDate method.
+		GetCountByAPIKeyAndDate []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ApiKey is the apiKey argument value.
+			ApiKey string
+			// Datetime is the datetime argument value.
+			Datetime time.Time
+		}
 		// GetTop3ClientRequestCount24Hour holds details about calls to the GetTop3ClientRequestCount24Hour method.
 		GetTop3ClientRequestCount24Hour []struct {
 			// Ctx is the ctx argument value.
@@ -64,6 +85,19 @@ type CacheMock struct {
 			// Member is the member argument value.
 			Member string
 		}
+		// SetClientRequestCount holds details about calls to the SetClientRequestCount method.
+		SetClientRequestCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ApiKey is the apiKey argument value.
+			ApiKey string
+			// Datetime is the datetime argument value.
+			Datetime time.Time
+			// Value is the value argument value.
+			Value int
+			// TTL is the ttl argument value.
+			TTL time.Duration
+		}
 		// SetClientRequestCountIfExist holds details about calls to the SetClientRequestCountIfExist method.
 		SetClientRequestCountIfExist []struct {
 			// Ctx is the ctx argument value.
@@ -76,9 +110,51 @@ type CacheMock struct {
 			Value int
 		}
 	}
+	lockGetCountByAPIKeyAndDate              sync.RWMutex
 	lockGetTop3ClientRequestCount24Hour      sync.RWMutex
 	lockIncrementTopClientRequestCountHourly sync.RWMutex
+	lockSetClientRequestCount                sync.RWMutex
 	lockSetClientRequestCountIfExist         sync.RWMutex
+}
+
+// GetCountByAPIKeyAndDate calls GetCountByAPIKeyAndDateFunc.
+func (mock *CacheMock) GetCountByAPIKeyAndDate(ctx context.Context, apiKey string, datetime time.Time) (int, error) {
+	if mock.GetCountByAPIKeyAndDateFunc == nil {
+		panic("CacheMock.GetCountByAPIKeyAndDateFunc: method is nil but Cache.GetCountByAPIKeyAndDate was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		ApiKey   string
+		Datetime time.Time
+	}{
+		Ctx:      ctx,
+		ApiKey:   apiKey,
+		Datetime: datetime,
+	}
+	mock.lockGetCountByAPIKeyAndDate.Lock()
+	mock.calls.GetCountByAPIKeyAndDate = append(mock.calls.GetCountByAPIKeyAndDate, callInfo)
+	mock.lockGetCountByAPIKeyAndDate.Unlock()
+	return mock.GetCountByAPIKeyAndDateFunc(ctx, apiKey, datetime)
+}
+
+// GetCountByAPIKeyAndDateCalls gets all the calls that were made to GetCountByAPIKeyAndDate.
+// Check the length with:
+//
+//	len(mockedCache.GetCountByAPIKeyAndDateCalls())
+func (mock *CacheMock) GetCountByAPIKeyAndDateCalls() []struct {
+	Ctx      context.Context
+	ApiKey   string
+	Datetime time.Time
+} {
+	var calls []struct {
+		Ctx      context.Context
+		ApiKey   string
+		Datetime time.Time
+	}
+	mock.lockGetCountByAPIKeyAndDate.RLock()
+	calls = mock.calls.GetCountByAPIKeyAndDate
+	mock.lockGetCountByAPIKeyAndDate.RUnlock()
+	return calls
 }
 
 // GetTop3ClientRequestCount24Hour calls GetTop3ClientRequestCount24HourFunc.
@@ -154,6 +230,54 @@ func (mock *CacheMock) IncrementTopClientRequestCountHourlyCalls() []struct {
 	mock.lockIncrementTopClientRequestCountHourly.RLock()
 	calls = mock.calls.IncrementTopClientRequestCountHourly
 	mock.lockIncrementTopClientRequestCountHourly.RUnlock()
+	return calls
+}
+
+// SetClientRequestCount calls SetClientRequestCountFunc.
+func (mock *CacheMock) SetClientRequestCount(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error {
+	if mock.SetClientRequestCountFunc == nil {
+		panic("CacheMock.SetClientRequestCountFunc: method is nil but Cache.SetClientRequestCount was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		ApiKey   string
+		Datetime time.Time
+		Value    int
+		TTL      time.Duration
+	}{
+		Ctx:      ctx,
+		ApiKey:   apiKey,
+		Datetime: datetime,
+		Value:    value,
+		TTL:      ttl,
+	}
+	mock.lockSetClientRequestCount.Lock()
+	mock.calls.SetClientRequestCount = append(mock.calls.SetClientRequestCount, callInfo)
+	mock.lockSetClientRequestCount.Unlock()
+	return mock.SetClientRequestCountFunc(ctx, apiKey, datetime, value, ttl)
+}
+
+// SetClientRequestCountCalls gets all the calls that were made to SetClientRequestCount.
+// Check the length with:
+//
+//	len(mockedCache.SetClientRequestCountCalls())
+func (mock *CacheMock) SetClientRequestCountCalls() []struct {
+	Ctx      context.Context
+	ApiKey   string
+	Datetime time.Time
+	Value    int
+	TTL      time.Duration
+} {
+	var calls []struct {
+		Ctx      context.Context
+		ApiKey   string
+		Datetime time.Time
+		Value    int
+		TTL      time.Duration
+	}
+	mock.lockSetClientRequestCount.RLock()
+	calls = mock.calls.SetClientRequestCount
+	mock.lockSetClientRequestCount.RUnlock()
 	return calls
 }
 

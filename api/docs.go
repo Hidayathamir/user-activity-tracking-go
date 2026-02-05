@@ -150,6 +150,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/usage/daily": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyJWTAuth": []
+                    }
+                ],
+                "description": "Get client daily request count",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RequestLog"
+                ],
+                "summary": "Get client daily request count",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDailyRequestCount"
+                        }
+                    }
+                }
+            }
+        },
         "/api/usage/top": {
             "get": {
                 "security": [
@@ -194,6 +222,26 @@ const docTemplate = `{
                 },
                 "total_page": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetClientDailyRequestCount": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDailyRequestCount"
+                },
+                "error_detail": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "error_message": {
+                    "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata"
                 }
             }
         },
@@ -297,6 +345,17 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Hidayathamir_user-activity-tracking-go_internal_model.DailyCount": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Hidayathamir_user-activity-tracking-go_internal_model.NameCount": {
             "type": "object",
             "properties": {
@@ -363,6 +422,17 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetClientDailyRequestCount": {
+            "type": "object",
+            "properties": {
+                "daily_count_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.DailyCount"
+                    }
                 }
             }
         },

@@ -22,6 +22,9 @@ var _ repository.ClientRequestCountRepository = &ClientRequestCountRepositoryMoc
 //
 //		// make and configure a mocked repository.ClientRequestCountRepository
 //		mockedClientRequestCountRepository := &ClientRequestCountRepositoryMock{
+//			GetCountByAPIKeyAndDateFunc: func(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time) (int, error) {
+//				panic("mock out the GetCountByAPIKeyAndDate method")
+//			},
 //			GetTop3ClientRequestCount24HourFunc: func(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error) {
 //				panic("mock out the GetTop3ClientRequestCount24Hour method")
 //			},
@@ -35,6 +38,9 @@ var _ repository.ClientRequestCountRepository = &ClientRequestCountRepositoryMoc
 //
 //	}
 type ClientRequestCountRepositoryMock struct {
+	// GetCountByAPIKeyAndDateFunc mocks the GetCountByAPIKeyAndDate method.
+	GetCountByAPIKeyAndDateFunc func(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time) (int, error)
+
 	// GetTop3ClientRequestCount24HourFunc mocks the GetTop3ClientRequestCount24Hour method.
 	GetTop3ClientRequestCount24HourFunc func(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error)
 
@@ -43,6 +49,17 @@ type ClientRequestCountRepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetCountByAPIKeyAndDate holds details about calls to the GetCountByAPIKeyAndDate method.
+		GetCountByAPIKeyAndDate []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db *gorm.DB
+			// ApiKey is the apiKey argument value.
+			ApiKey string
+			// Datetime is the datetime argument value.
+			Datetime time.Time
+		}
 		// GetTop3ClientRequestCount24Hour holds details about calls to the GetTop3ClientRequestCount24Hour method.
 		GetTop3ClientRequestCount24Hour []struct {
 			// Ctx is the ctx argument value.
@@ -64,8 +81,53 @@ type ClientRequestCountRepositoryMock struct {
 			Count int
 		}
 	}
+	lockGetCountByAPIKeyAndDate         sync.RWMutex
 	lockGetTop3ClientRequestCount24Hour sync.RWMutex
 	lockIncrementCount                  sync.RWMutex
+}
+
+// GetCountByAPIKeyAndDate calls GetCountByAPIKeyAndDateFunc.
+func (mock *ClientRequestCountRepositoryMock) GetCountByAPIKeyAndDate(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time) (int, error) {
+	if mock.GetCountByAPIKeyAndDateFunc == nil {
+		panic("ClientRequestCountRepositoryMock.GetCountByAPIKeyAndDateFunc: method is nil but ClientRequestCountRepository.GetCountByAPIKeyAndDate was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Db       *gorm.DB
+		ApiKey   string
+		Datetime time.Time
+	}{
+		Ctx:      ctx,
+		Db:       db,
+		ApiKey:   apiKey,
+		Datetime: datetime,
+	}
+	mock.lockGetCountByAPIKeyAndDate.Lock()
+	mock.calls.GetCountByAPIKeyAndDate = append(mock.calls.GetCountByAPIKeyAndDate, callInfo)
+	mock.lockGetCountByAPIKeyAndDate.Unlock()
+	return mock.GetCountByAPIKeyAndDateFunc(ctx, db, apiKey, datetime)
+}
+
+// GetCountByAPIKeyAndDateCalls gets all the calls that were made to GetCountByAPIKeyAndDate.
+// Check the length with:
+//
+//	len(mockedClientRequestCountRepository.GetCountByAPIKeyAndDateCalls())
+func (mock *ClientRequestCountRepositoryMock) GetCountByAPIKeyAndDateCalls() []struct {
+	Ctx      context.Context
+	Db       *gorm.DB
+	ApiKey   string
+	Datetime time.Time
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Db       *gorm.DB
+		ApiKey   string
+		Datetime time.Time
+	}
+	mock.lockGetCountByAPIKeyAndDate.RLock()
+	calls = mock.calls.GetCountByAPIKeyAndDate
+	mock.lockGetCountByAPIKeyAndDate.RUnlock()
+	return calls
 }
 
 // GetTop3ClientRequestCount24Hour calls GetTop3ClientRequestCount24HourFunc.

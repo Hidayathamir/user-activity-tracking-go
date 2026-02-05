@@ -14,6 +14,10 @@ func (c Column) GTE(value any) (string, any) {
 	return string(c) + " >= ?", value
 }
 
+func (c Column) LT(value any) (string, any) {
+	return string(c) + " < ?", value
+}
+
 func (c Column) Plus(value any) (string, any) {
 	return string(c) + " + ?", value
 }

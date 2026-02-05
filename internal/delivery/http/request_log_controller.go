@@ -46,6 +46,8 @@ func (r *RequestLogController) RecordAPIHit(c *gin.Context) {
 		return
 	}
 
+	req.Timestamp = req.Timestamp.UTC()
+
 	res, err := r.Usecase.RecordAPIHit(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
@@ -55,6 +57,30 @@ func (r *RequestLogController) RecordAPIHit(c *gin.Context) {
 	}
 
 	response.Data(c, http.StatusCreated, res)
+}
+
+// GetClientDailyRequestCount godoc
+//
+//	@Summary		Get client daily request count
+//	@Description	Get client daily request count
+//	@Tags			RequestLog
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	response.WebResponse[model.ResGetClientDailyRequestCount]
+//	@Router			/api/usage/daily [get]
+//	@Security		ApiKeyJWTAuth
+func (r *RequestLogController) GetClientDailyRequestCount(c *gin.Context) {
+	req := new(model.ReqGetClientDailyRequestCount)
+
+	res, err := r.Usecase.GetClientDailyRequestCount(c.Request.Context(), req)
+	if err != nil {
+		err = errkit.AddFuncName(err)
+		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()
+		response.Error(c, err)
+		return
+	}
+
+	response.Data(c, http.StatusOK, res)
 }
 
 // GetTop3ClientRequestCount24Hour godoc

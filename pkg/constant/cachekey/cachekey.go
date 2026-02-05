@@ -15,9 +15,8 @@ const (
 )
 
 // BuildClientRequestCountKey -.
-// make sure argument datetime is truncated to hour.
 func BuildClientRequestCountKey(apiKey string, datetime time.Time) (key string) {
-	return fmt.Sprintf("client_request_count:%s:%s", apiKey, datetime.Format(timekit.TimeFormatCustomRFC3339))
+	return fmt.Sprintf("client_request_count:%s:%s", apiKey, datetime.Format(time.DateOnly))
 }
 
 func ReverseClientRequestCountKey(key string) (apiKey string, datetime time.Time, err error) {
@@ -30,7 +29,7 @@ func ReverseClientRequestCountKey(key string) (apiKey string, datetime time.Time
 
 	apiKey = parts[1]
 
-	datetime, err = time.Parse(timekit.TimeFormatCustomRFC3339, parts[2])
+	datetime, err = time.Parse(time.DateOnly, parts[2])
 	if err != nil {
 		return "", time.Time{}, errkit.AddFuncName(err)
 	}

@@ -23,6 +23,9 @@ var _ requestlog.RequestLogUsecase = &RequestLogUsecaseMock{}
 //			BatchConsumeClientRequestLogEventFunc: func(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error {
 //				panic("mock out the BatchConsumeClientRequestLogEvent method")
 //			},
+//			GetClientDailyRequestCountFunc: func(ctx context.Context, req *model.ReqGetClientDailyRequestCount) (*model.ResGetClientDailyRequestCount, error) {
+//				panic("mock out the GetClientDailyRequestCount method")
+//			},
 //			GetTop3ClientRequestCount24HourFunc: func(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error) {
 //				panic("mock out the GetTop3ClientRequestCount24Hour method")
 //			},
@@ -39,6 +42,9 @@ type RequestLogUsecaseMock struct {
 	// BatchConsumeClientRequestLogEventFunc mocks the BatchConsumeClientRequestLogEvent method.
 	BatchConsumeClientRequestLogEventFunc func(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error
 
+	// GetClientDailyRequestCountFunc mocks the GetClientDailyRequestCount method.
+	GetClientDailyRequestCountFunc func(ctx context.Context, req *model.ReqGetClientDailyRequestCount) (*model.ResGetClientDailyRequestCount, error)
+
 	// GetTop3ClientRequestCount24HourFunc mocks the GetTop3ClientRequestCount24Hour method.
 	GetTop3ClientRequestCount24HourFunc func(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error)
 
@@ -53,6 +59,13 @@ type RequestLogUsecaseMock struct {
 			Ctx context.Context
 			// Req is the req argument value.
 			Req *model.ReqBatchConsumeClientRequestLogEvent
+		}
+		// GetClientDailyRequestCount holds details about calls to the GetClientDailyRequestCount method.
+		GetClientDailyRequestCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Req is the req argument value.
+			Req *model.ReqGetClientDailyRequestCount
 		}
 		// GetTop3ClientRequestCount24Hour holds details about calls to the GetTop3ClientRequestCount24Hour method.
 		GetTop3ClientRequestCount24Hour []struct {
@@ -70,6 +83,7 @@ type RequestLogUsecaseMock struct {
 		}
 	}
 	lockBatchConsumeClientRequestLogEvent sync.RWMutex
+	lockGetClientDailyRequestCount        sync.RWMutex
 	lockGetTop3ClientRequestCount24Hour   sync.RWMutex
 	lockRecordAPIHit                      sync.RWMutex
 }
@@ -107,6 +121,42 @@ func (mock *RequestLogUsecaseMock) BatchConsumeClientRequestLogEventCalls() []st
 	mock.lockBatchConsumeClientRequestLogEvent.RLock()
 	calls = mock.calls.BatchConsumeClientRequestLogEvent
 	mock.lockBatchConsumeClientRequestLogEvent.RUnlock()
+	return calls
+}
+
+// GetClientDailyRequestCount calls GetClientDailyRequestCountFunc.
+func (mock *RequestLogUsecaseMock) GetClientDailyRequestCount(ctx context.Context, req *model.ReqGetClientDailyRequestCount) (*model.ResGetClientDailyRequestCount, error) {
+	if mock.GetClientDailyRequestCountFunc == nil {
+		panic("RequestLogUsecaseMock.GetClientDailyRequestCountFunc: method is nil but RequestLogUsecase.GetClientDailyRequestCount was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Req *model.ReqGetClientDailyRequestCount
+	}{
+		Ctx: ctx,
+		Req: req,
+	}
+	mock.lockGetClientDailyRequestCount.Lock()
+	mock.calls.GetClientDailyRequestCount = append(mock.calls.GetClientDailyRequestCount, callInfo)
+	mock.lockGetClientDailyRequestCount.Unlock()
+	return mock.GetClientDailyRequestCountFunc(ctx, req)
+}
+
+// GetClientDailyRequestCountCalls gets all the calls that were made to GetClientDailyRequestCount.
+// Check the length with:
+//
+//	len(mockedRequestLogUsecase.GetClientDailyRequestCountCalls())
+func (mock *RequestLogUsecaseMock) GetClientDailyRequestCountCalls() []struct {
+	Ctx context.Context
+	Req *model.ReqGetClientDailyRequestCount
+} {
+	var calls []struct {
+		Ctx context.Context
+		Req *model.ReqGetClientDailyRequestCount
+	}
+	mock.lockGetClientDailyRequestCount.RLock()
+	calls = mock.calls.GetClientDailyRequestCount
+	mock.lockGetClientDailyRequestCount.RUnlock()
 	return calls
 }
 

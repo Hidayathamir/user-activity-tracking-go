@@ -20,8 +20,10 @@ import (
 
 type Cache interface {
 	SetClientRequestCountIfExist(ctx context.Context, apiKey string, datetime time.Time, value int) error
+	SetClientRequestCount(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error
 	IncrementTopClientRequestCountHourly(ctx context.Context, timestamp time.Time, increment int, member string) error
 	GetTop3ClientRequestCount24Hour(ctx context.Context) (model.APIKeyCountList, error)
+	GetCountByAPIKeyAndDate(ctx context.Context, apiKey string, datetime time.Time) (int, error)
 }
 
 var _ Cache = &CacheImpl{}
@@ -60,6 +62,17 @@ func (c *CacheImpl) SetClientRequestCountIfExist(ctx context.Context, apiKey str
 	return nil
 }
 
+func (c *CacheImpl) SetClientRequestCount(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error {
+	key := cachekey.BuildClientRequestCountKey(apiKey, datetime)
+
+	err := c.rdb.Set(ctx, string(key), value, ttl).Err()
+	if err != nil {
+		return errkit.AddFuncName(err)
+	}
+
+	return nil
+}
+
 func (c *CacheImpl) IncrementTopClientRequestCountHourly(ctx context.Context, timestamp time.Time, increment int, member string) error {
 	key := cachekey.BuildTopClientRequestCountHourlyKey(timestamp)
 
@@ -91,4 +104,15 @@ func (c *CacheImpl) GetTop3ClientRequestCount24Hour(ctx context.Context) (model.
 	}
 
 	return res, nil
+}
+
+func (c *CacheImpl) GetCountByAPIKeyAndDate(ctx context.Context, apiKey string, datetime time.Time) (int, error) {
+	key := cachekey.BuildClientRequestCountKey(apiKey, datetime)
+
+	val, err := c.rdb.Get(ctx, key).Int()
+	if err != nil {
+		return 0, errkit.AddFuncName(err)
+	}
+
+	return val, nil
 }

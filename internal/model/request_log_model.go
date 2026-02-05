@@ -46,3 +46,17 @@ type APIKeyCount struct {
 }
 
 type APIKeyCountList []APIKeyCount
+
+type ReqGetClientDailyRequestCount struct {
+}
+
+type DailyCount struct {
+	Date  string `json:"date"`
+	Count int    `json:"count"`
+}
+
+type DailyCountList []DailyCount
+
+type ResGetClientDailyRequestCount struct {
+	DailyCountList DailyCountList `json:"daily_count_list"`
+}

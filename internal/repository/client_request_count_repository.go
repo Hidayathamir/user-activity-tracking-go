@@ -20,6 +20,7 @@ import (
 type ClientRequestCountRepository interface {
 	IncrementCount(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error)
 	GetTop3ClientRequestCount24Hour(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error)
+	GetCountByAPIKeyAndDate(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time) (int, error)
 }
 
 var _ ClientRequestCountRepository = &ClientRequestCountRepositoryImpl{}
@@ -71,7 +72,7 @@ func (r *ClientRequestCountRepositoryImpl) IncrementCount(ctx context.Context, d
 func (r *ClientRequestCountRepositoryImpl) GetTop3ClientRequestCount24Hour(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error) {
 	var top3ClientRequestCountList entity.Top3ClientRequestCountList
 
-	_24HourAgo := time.Now().Add(-24 * time.Hour)
+	_24HourAgo := time.Now().UTC().Add(-24 * time.Hour)
 
 	err := db.WithContext(ctx).
 		Table(table.ClientRequestCount).
@@ -88,4 +89,23 @@ func (r *ClientRequestCountRepositoryImpl) GetTop3ClientRequestCount24Hour(ctx c
 	converter.EntityTop3ClientRequestCountListToModelAPIKeyCountList(&top3ClientRequestCountList, &res)
 
 	return res, nil
+}
+
+func (r *ClientRequestCountRepositoryImpl) GetCountByAPIKeyAndDate(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time) (int, error) {
+	startOfDay := time.Date(datetime.Year(), datetime.Month(), datetime.Day(), 0, 0, 0, 0, datetime.Location())
+	startOfNextDay := startOfDay.AddDate(0, 0, 1)
+
+	var count int
+	err := db.WithContext(ctx).
+		Table(table.ClientRequestCount).
+		Select("COALESCE(SUM(" + column.Count.Str() + "), 0)").
+		Where(column.APIKey.Eq(apiKey)).
+		Where(column.Datetime.GTE(startOfDay)).
+		Where(column.Datetime.LT(startOfNextDay)).
+		Scan(&count).Error
+	if err != nil {
+		return 0, errkit.AddFuncName(err)
+	}
+
+	return count, nil
 }

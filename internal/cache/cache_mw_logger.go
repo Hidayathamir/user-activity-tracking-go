@@ -35,6 +35,20 @@ func (c *CacheMwLogger) SetClientRequestCountIfExist(ctx context.Context, apiKey
 	return err
 }
 
+func (c *CacheMwLogger) SetClientRequestCount(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error {
+	err := c.Next.SetClientRequestCount(ctx, apiKey, datetime, value, ttl)
+
+	fields := logrus.Fields{
+		"apiKey":   apiKey,
+		"datetime": datetime,
+		"value":    value,
+		"ttl":      ttl,
+	}
+	x.LogMw(ctx, fields, err, layer.Cache)
+
+	return err
+}
+
 func (c *CacheMwLogger) IncrementTopClientRequestCountHourly(ctx context.Context, timestamp time.Time, increment int, member string) error {
 	err := c.Next.IncrementTopClientRequestCountHourly(ctx, timestamp, increment, member)
 
@@ -53,6 +67,19 @@ func (c *CacheMwLogger) GetTop3ClientRequestCount24Hour(ctx context.Context) (mo
 
 	fields := logrus.Fields{
 		"res": res,
+	}
+	x.LogMw(ctx, fields, err, layer.Cache)
+
+	return res, err
+}
+
+func (c *CacheMwLogger) GetCountByAPIKeyAndDate(ctx context.Context, apiKey string, datetime time.Time) (int, error) {
+	res, err := c.Next.GetCountByAPIKeyAndDate(ctx, apiKey, datetime)
+
+	fields := logrus.Fields{
+		"apiKey":   apiKey,
+		"datetime": datetime,
+		"res":      res,
 	}
 	x.LogMw(ctx, fields, err, layer.Cache)
 
