@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func NewKafkaProducer(viperConfig *viper.Viper) *kafka.Writer {
+func NewKafkaWriter(viperConfig *viper.Viper) *kafka.Writer {
 	address := viperConfig.GetString(configkey.KafkaAddress)
 
 	waitForKafka(address, 30, 2*time.Second)
@@ -23,6 +23,23 @@ func NewKafkaProducer(viperConfig *viper.Viper) *kafka.Writer {
 	}
 
 	return kafkaWriter
+}
+
+func NewKafkaReader(viperConfig *viper.Viper, groupID string, topic string) *kafka.Reader {
+	address := viperConfig.GetString(configkey.KafkaAddress)
+
+	waitForKafka(address, 30, 2*time.Second)
+
+	const _10MB = 10e6
+
+	kafkaReader := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:  []string{address},
+		GroupID:  groupID,
+		Topic:    topic,
+		MaxBytes: _10MB,
+	})
+
+	return kafkaReader
 }
 
 // waitForKafka will waits for Kafka to be fully ready with retry logic.

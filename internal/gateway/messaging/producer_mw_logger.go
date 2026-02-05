@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
+	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/layer"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/sirupsen/logrus"
 )
@@ -26,7 +27,7 @@ func (p *ProducerMwLogger) SendClientRequestLogEvent(ctx context.Context, event 
 	fields := logrus.Fields{
 		"event": event,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Producer)
 
 	return err
 }

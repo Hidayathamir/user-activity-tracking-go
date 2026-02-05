@@ -31,7 +31,7 @@ func main() {
 	rdb := config.NewRedis(viperConfig)
 	defer x.PanicIfErrForDefer(rdb.Close)
 
-	kafkaWriter := config.NewKafkaProducer(viperConfig)
+	kafkaWriter := config.NewKafkaWriter(viperConfig)
 	defer x.PanicIfErrForDefer(kafkaWriter.Close)
 
 	usecases := config.SetupUsecases(viperConfig, db, rdb, kafkaWriter)
@@ -44,6 +44,7 @@ func main() {
 
 	route.Setup(ginEngine, controllers, middlewares)
 
+	x.Logger.Debug("open swagger: http://localhost:9090/swagger/index.html")
 	err := ginEngine.Run("0.0.0.0:9090")
 	x.PanicIfErr(err)
 }

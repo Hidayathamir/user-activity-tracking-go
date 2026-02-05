@@ -26,7 +26,8 @@
     }
   },
   "kafka": {
-    "address": "localhost:9092"
+    "address": "localhost:9092",
+    "group_id": "user-activity-tracking-go-worker"
   },
   "log": {
     "level": "trace"

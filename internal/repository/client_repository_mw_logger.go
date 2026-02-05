@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
+	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/layer"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -27,7 +28,7 @@ func (c *ClientRepositoryMwLogger) Create(ctx context.Context, db *gorm.DB, clie
 	fields := logrus.Fields{
 		"client": client,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Repository)
 
 	return err
 }
@@ -38,7 +39,7 @@ func (c *ClientRepositoryMwLogger) FindByName(ctx context.Context, db *gorm.DB, 
 	fields := logrus.Fields{
 		"client": client,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Repository)
 
 	return err
 }

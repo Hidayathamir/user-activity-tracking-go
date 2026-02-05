@@ -1,10 +1,12 @@
 .SILENT:
 
 run:
-	go run cmd/web/main.go
+	mkdir -p logs
+	go run cmd/web/main.go >> logs/web_log.jsonl 2>&1
 
 run-worker:
-	go run cmd/worker/main.go
+	mkdir -p logs
+	go run cmd/worker/main.go >> logs/worker_log.jsonl 2>&1
 
 #################################### 
 

@@ -4,7 +4,11 @@
 package mock
 
 import (
+	"context"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
+	"gorm.io/gorm"
+	"sync"
 )
 
 // Ensure, that RequestLogRepositoryMock does implement repository.RequestLogRepository.
@@ -17,6 +21,9 @@ var _ repository.RequestLogRepository = &RequestLogRepositoryMock{}
 //
 //		// make and configure a mocked repository.RequestLogRepository
 //		mockedRequestLogRepository := &RequestLogRepositoryMock{
+//			CreateAllFunc: func(ctx context.Context, db *gorm.DB, requestLogList *entity.RequestLogList) error {
+//				panic("mock out the CreateAll method")
+//			},
 //		}
 //
 //		// use mockedRequestLogRepository in code that requires repository.RequestLogRepository
@@ -24,7 +31,60 @@ var _ repository.RequestLogRepository = &RequestLogRepositoryMock{}
 //
 //	}
 type RequestLogRepositoryMock struct {
+	// CreateAllFunc mocks the CreateAll method.
+	CreateAllFunc func(ctx context.Context, db *gorm.DB, requestLogList *entity.RequestLogList) error
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// CreateAll holds details about calls to the CreateAll method.
+		CreateAll []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db *gorm.DB
+			// RequestLogList is the requestLogList argument value.
+			RequestLogList *entity.RequestLogList
+		}
 	}
+	lockCreateAll sync.RWMutex
+}
+
+// CreateAll calls CreateAllFunc.
+func (mock *RequestLogRepositoryMock) CreateAll(ctx context.Context, db *gorm.DB, requestLogList *entity.RequestLogList) error {
+	if mock.CreateAllFunc == nil {
+		panic("RequestLogRepositoryMock.CreateAllFunc: method is nil but RequestLogRepository.CreateAll was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Db             *gorm.DB
+		RequestLogList *entity.RequestLogList
+	}{
+		Ctx:            ctx,
+		Db:             db,
+		RequestLogList: requestLogList,
+	}
+	mock.lockCreateAll.Lock()
+	mock.calls.CreateAll = append(mock.calls.CreateAll, callInfo)
+	mock.lockCreateAll.Unlock()
+	return mock.CreateAllFunc(ctx, db, requestLogList)
+}
+
+// CreateAllCalls gets all the calls that were made to CreateAll.
+// Check the length with:
+//
+//	len(mockedRequestLogRepository.CreateAllCalls())
+func (mock *RequestLogRepositoryMock) CreateAllCalls() []struct {
+	Ctx            context.Context
+	Db             *gorm.DB
+	RequestLogList *entity.RequestLogList
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Db             *gorm.DB
+		RequestLogList *entity.RequestLogList
+	}
+	mock.lockCreateAll.RLock()
+	calls = mock.calls.CreateAll
+	mock.lockCreateAll.RUnlock()
+	return calls
 }

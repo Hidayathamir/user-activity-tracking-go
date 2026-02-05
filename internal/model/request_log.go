@@ -9,6 +9,12 @@ type ClientRequestLogEvent struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+type ClientRequestLogEventList []ClientRequestLogEvent
+
+type ReqBatchConsumeClientRequestLogEvent struct {
+	EventList ClientRequestLogEventList
+}
+
 type ReqRecordAPIHit struct {
 	APIKey    string    `json:"api_key"     validate:"required"`
 	IP        string    `json:"ip"          validate:"required"`

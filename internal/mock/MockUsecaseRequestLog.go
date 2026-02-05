@@ -20,6 +20,9 @@ var _ requestlog.RequestLogUsecase = &RequestLogUsecaseMock{}
 //
 //		// make and configure a mocked requestlog.RequestLogUsecase
 //		mockedRequestLogUsecase := &RequestLogUsecaseMock{
+//			BatchConsumeClientRequestLogEventFunc: func(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error {
+//				panic("mock out the BatchConsumeClientRequestLogEvent method")
+//			},
 //			RecordAPIHitFunc: func(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error) {
 //				panic("mock out the RecordAPIHit method")
 //			},
@@ -30,11 +33,21 @@ var _ requestlog.RequestLogUsecase = &RequestLogUsecaseMock{}
 //
 //	}
 type RequestLogUsecaseMock struct {
+	// BatchConsumeClientRequestLogEventFunc mocks the BatchConsumeClientRequestLogEvent method.
+	BatchConsumeClientRequestLogEventFunc func(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error
+
 	// RecordAPIHitFunc mocks the RecordAPIHit method.
 	RecordAPIHitFunc func(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// BatchConsumeClientRequestLogEvent holds details about calls to the BatchConsumeClientRequestLogEvent method.
+		BatchConsumeClientRequestLogEvent []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Req is the req argument value.
+			Req *model.ReqBatchConsumeClientRequestLogEvent
+		}
 		// RecordAPIHit holds details about calls to the RecordAPIHit method.
 		RecordAPIHit []struct {
 			// Ctx is the ctx argument value.
@@ -43,7 +56,44 @@ type RequestLogUsecaseMock struct {
 			Req *model.ReqRecordAPIHit
 		}
 	}
-	lockRecordAPIHit sync.RWMutex
+	lockBatchConsumeClientRequestLogEvent sync.RWMutex
+	lockRecordAPIHit                      sync.RWMutex
+}
+
+// BatchConsumeClientRequestLogEvent calls BatchConsumeClientRequestLogEventFunc.
+func (mock *RequestLogUsecaseMock) BatchConsumeClientRequestLogEvent(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error {
+	if mock.BatchConsumeClientRequestLogEventFunc == nil {
+		panic("RequestLogUsecaseMock.BatchConsumeClientRequestLogEventFunc: method is nil but RequestLogUsecase.BatchConsumeClientRequestLogEvent was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Req *model.ReqBatchConsumeClientRequestLogEvent
+	}{
+		Ctx: ctx,
+		Req: req,
+	}
+	mock.lockBatchConsumeClientRequestLogEvent.Lock()
+	mock.calls.BatchConsumeClientRequestLogEvent = append(mock.calls.BatchConsumeClientRequestLogEvent, callInfo)
+	mock.lockBatchConsumeClientRequestLogEvent.Unlock()
+	return mock.BatchConsumeClientRequestLogEventFunc(ctx, req)
+}
+
+// BatchConsumeClientRequestLogEventCalls gets all the calls that were made to BatchConsumeClientRequestLogEvent.
+// Check the length with:
+//
+//	len(mockedRequestLogUsecase.BatchConsumeClientRequestLogEventCalls())
+func (mock *RequestLogUsecaseMock) BatchConsumeClientRequestLogEventCalls() []struct {
+	Ctx context.Context
+	Req *model.ReqBatchConsumeClientRequestLogEvent
+} {
+	var calls []struct {
+		Ctx context.Context
+		Req *model.ReqBatchConsumeClientRequestLogEvent
+	}
+	mock.lockBatchConsumeClientRequestLogEvent.RLock()
+	calls = mock.calls.BatchConsumeClientRequestLogEvent
+	mock.lockBatchConsumeClientRequestLogEvent.RUnlock()
+	return calls
 }
 
 // RecordAPIHit calls RecordAPIHitFunc.

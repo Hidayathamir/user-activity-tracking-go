@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
+	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/layer"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/sirupsen/logrus"
 )
@@ -27,7 +28,7 @@ func (c *ClientUsecaseMwLogger) Register(ctx context.Context, req *model.ReqRegi
 		"req": req,
 		"res": res,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Usecase)
 
 	return res, err
 }
@@ -39,7 +40,7 @@ func (c *ClientUsecaseMwLogger) Login(ctx context.Context, req *model.ReqLogin) 
 		"req": req,
 		"res": res,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Usecase)
 
 	return res, err
 }
@@ -51,7 +52,7 @@ func (c *ClientUsecaseMwLogger) GetClientDetail(ctx context.Context, req *model.
 		"req": req,
 		"res": res,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Usecase)
 
 	return res, err
 }
@@ -63,7 +64,7 @@ func (c *ClientUsecaseMwLogger) Verify(ctx context.Context, req *model.ReqVerify
 		"req": req,
 		"res": res,
 	}
-	x.LogMw(ctx, fields, err)
+	x.LogMw(ctx, fields, err, layer.Usecase)
 
 	return res, err
 }

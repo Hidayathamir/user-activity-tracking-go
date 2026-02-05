@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func LogMw(ctx context.Context, fields logrus.Fields, err error) {
+func LogMw(ctx context.Context, fields logrus.Fields, err error, layer string) {
 	level, errMsg := GetLevelAndErrMsg(err)
 
 	fileLine, funcName := caller.Info(caller.WithSkip(1))
@@ -17,6 +17,7 @@ func LogMw(ctx context.Context, fields logrus.Fields, err error) {
 		"fields": LimitJSON(fields),
 		"err":    errMsg,
 		"source": fileLine,
+		"layer":  layer,
 	}).Log(level, funcName)
 }
 

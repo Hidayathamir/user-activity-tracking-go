@@ -35,7 +35,7 @@ func NewRequestLogController(cfg *viper.Viper, useCase requestlog.RequestLogUsec
 //	@Success		201		{object}	response.WebResponse[model.ResRecordAPIHit]
 //	@Router			/api/logs [post]
 //	@Security		ApiKeyXInternalSecret
-func (_c *RequestLogController) RecordAPIHit(c *gin.Context) {
+func (r *RequestLogController) RecordAPIHit(c *gin.Context) {
 	req := new(model.ReqRecordAPIHit)
 	err := c.ShouldBindJSON(req)
 	if err != nil {
@@ -46,7 +46,7 @@ func (_c *RequestLogController) RecordAPIHit(c *gin.Context) {
 		return
 	}
 
-	res, err := _c.Usecase.RecordAPIHit(c.Request.Context(), req)
+	res, err := r.Usecase.RecordAPIHit(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
 		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()

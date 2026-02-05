@@ -4,7 +4,10 @@
 package mock
 
 import (
+	"context"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
+	"sync"
+	"time"
 )
 
 // Ensure, that CacheMock does implement cache.Cache.
@@ -17,6 +20,12 @@ var _ cache.Cache = &CacheMock{}
 //
 //		// make and configure a mocked cache.Cache
 //		mockedCache := &CacheMock{
+//			IncrementTopClientRequestCountHourlyFunc: func(ctx context.Context, timestamp time.Time, increment int, member string) error {
+//				panic("mock out the IncrementTopClientRequestCountHourly method")
+//			},
+//			SetClientRequestCountIfExistFunc: func(ctx context.Context, apiKey string, datetime time.Time, value int) error {
+//				panic("mock out the SetClientRequestCountIfExist method")
+//			},
 //		}
 //
 //		// use mockedCache in code that requires cache.Cache
@@ -24,7 +33,125 @@ var _ cache.Cache = &CacheMock{}
 //
 //	}
 type CacheMock struct {
+	// IncrementTopClientRequestCountHourlyFunc mocks the IncrementTopClientRequestCountHourly method.
+	IncrementTopClientRequestCountHourlyFunc func(ctx context.Context, timestamp time.Time, increment int, member string) error
+
+	// SetClientRequestCountIfExistFunc mocks the SetClientRequestCountIfExist method.
+	SetClientRequestCountIfExistFunc func(ctx context.Context, apiKey string, datetime time.Time, value int) error
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// IncrementTopClientRequestCountHourly holds details about calls to the IncrementTopClientRequestCountHourly method.
+		IncrementTopClientRequestCountHourly []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Timestamp is the timestamp argument value.
+			Timestamp time.Time
+			// Increment is the increment argument value.
+			Increment int
+			// Member is the member argument value.
+			Member string
+		}
+		// SetClientRequestCountIfExist holds details about calls to the SetClientRequestCountIfExist method.
+		SetClientRequestCountIfExist []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ApiKey is the apiKey argument value.
+			ApiKey string
+			// Datetime is the datetime argument value.
+			Datetime time.Time
+			// Value is the value argument value.
+			Value int
+		}
 	}
+	lockIncrementTopClientRequestCountHourly sync.RWMutex
+	lockSetClientRequestCountIfExist         sync.RWMutex
+}
+
+// IncrementTopClientRequestCountHourly calls IncrementTopClientRequestCountHourlyFunc.
+func (mock *CacheMock) IncrementTopClientRequestCountHourly(ctx context.Context, timestamp time.Time, increment int, member string) error {
+	if mock.IncrementTopClientRequestCountHourlyFunc == nil {
+		panic("CacheMock.IncrementTopClientRequestCountHourlyFunc: method is nil but Cache.IncrementTopClientRequestCountHourly was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Timestamp time.Time
+		Increment int
+		Member    string
+	}{
+		Ctx:       ctx,
+		Timestamp: timestamp,
+		Increment: increment,
+		Member:    member,
+	}
+	mock.lockIncrementTopClientRequestCountHourly.Lock()
+	mock.calls.IncrementTopClientRequestCountHourly = append(mock.calls.IncrementTopClientRequestCountHourly, callInfo)
+	mock.lockIncrementTopClientRequestCountHourly.Unlock()
+	return mock.IncrementTopClientRequestCountHourlyFunc(ctx, timestamp, increment, member)
+}
+
+// IncrementTopClientRequestCountHourlyCalls gets all the calls that were made to IncrementTopClientRequestCountHourly.
+// Check the length with:
+//
+//	len(mockedCache.IncrementTopClientRequestCountHourlyCalls())
+func (mock *CacheMock) IncrementTopClientRequestCountHourlyCalls() []struct {
+	Ctx       context.Context
+	Timestamp time.Time
+	Increment int
+	Member    string
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Timestamp time.Time
+		Increment int
+		Member    string
+	}
+	mock.lockIncrementTopClientRequestCountHourly.RLock()
+	calls = mock.calls.IncrementTopClientRequestCountHourly
+	mock.lockIncrementTopClientRequestCountHourly.RUnlock()
+	return calls
+}
+
+// SetClientRequestCountIfExist calls SetClientRequestCountIfExistFunc.
+func (mock *CacheMock) SetClientRequestCountIfExist(ctx context.Context, apiKey string, datetime time.Time, value int) error {
+	if mock.SetClientRequestCountIfExistFunc == nil {
+		panic("CacheMock.SetClientRequestCountIfExistFunc: method is nil but Cache.SetClientRequestCountIfExist was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		ApiKey   string
+		Datetime time.Time
+		Value    int
+	}{
+		Ctx:      ctx,
+		ApiKey:   apiKey,
+		Datetime: datetime,
+		Value:    value,
+	}
+	mock.lockSetClientRequestCountIfExist.Lock()
+	mock.calls.SetClientRequestCountIfExist = append(mock.calls.SetClientRequestCountIfExist, callInfo)
+	mock.lockSetClientRequestCountIfExist.Unlock()
+	return mock.SetClientRequestCountIfExistFunc(ctx, apiKey, datetime, value)
+}
+
+// SetClientRequestCountIfExistCalls gets all the calls that were made to SetClientRequestCountIfExist.
+// Check the length with:
+//
+//	len(mockedCache.SetClientRequestCountIfExistCalls())
+func (mock *CacheMock) SetClientRequestCountIfExistCalls() []struct {
+	Ctx      context.Context
+	ApiKey   string
+	Datetime time.Time
+	Value    int
+} {
+	var calls []struct {
+		Ctx      context.Context
+		ApiKey   string
+		Datetime time.Time
+		Value    int
+	}
+	mock.lockSetClientRequestCountIfExist.RLock()
+	calls = mock.calls.SetClientRequestCountIfExist
+	mock.lockSetClientRequestCountIfExist.RUnlock()
+	return calls
 }

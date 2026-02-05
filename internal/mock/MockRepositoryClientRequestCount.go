@@ -4,7 +4,11 @@
 package mock
 
 import (
+	"context"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
+	"gorm.io/gorm"
+	"sync"
+	"time"
 )
 
 // Ensure, that ClientRequestCountRepositoryMock does implement repository.ClientRequestCountRepository.
@@ -17,6 +21,9 @@ var _ repository.ClientRequestCountRepository = &ClientRequestCountRepositoryMoc
 //
 //		// make and configure a mocked repository.ClientRequestCountRepository
 //		mockedClientRequestCountRepository := &ClientRequestCountRepositoryMock{
+//			IncrementCountFunc: func(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error) {
+//				panic("mock out the IncrementCount method")
+//			},
 //		}
 //
 //		// use mockedClientRequestCountRepository in code that requires repository.ClientRequestCountRepository
@@ -24,7 +31,72 @@ var _ repository.ClientRequestCountRepository = &ClientRequestCountRepositoryMoc
 //
 //	}
 type ClientRequestCountRepositoryMock struct {
+	// IncrementCountFunc mocks the IncrementCount method.
+	IncrementCountFunc func(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// IncrementCount holds details about calls to the IncrementCount method.
+		IncrementCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db *gorm.DB
+			// ApiKey is the apiKey argument value.
+			ApiKey string
+			// Datetime is the datetime argument value.
+			Datetime time.Time
+			// Count is the count argument value.
+			Count int
+		}
 	}
+	lockIncrementCount sync.RWMutex
+}
+
+// IncrementCount calls IncrementCountFunc.
+func (mock *ClientRequestCountRepositoryMock) IncrementCount(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error) {
+	if mock.IncrementCountFunc == nil {
+		panic("ClientRequestCountRepositoryMock.IncrementCountFunc: method is nil but ClientRequestCountRepository.IncrementCount was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Db       *gorm.DB
+		ApiKey   string
+		Datetime time.Time
+		Count    int
+	}{
+		Ctx:      ctx,
+		Db:       db,
+		ApiKey:   apiKey,
+		Datetime: datetime,
+		Count:    count,
+	}
+	mock.lockIncrementCount.Lock()
+	mock.calls.IncrementCount = append(mock.calls.IncrementCount, callInfo)
+	mock.lockIncrementCount.Unlock()
+	return mock.IncrementCountFunc(ctx, db, apiKey, datetime, count)
+}
+
+// IncrementCountCalls gets all the calls that were made to IncrementCount.
+// Check the length with:
+//
+//	len(mockedClientRequestCountRepository.IncrementCountCalls())
+func (mock *ClientRequestCountRepositoryMock) IncrementCountCalls() []struct {
+	Ctx      context.Context
+	Db       *gorm.DB
+	ApiKey   string
+	Datetime time.Time
+	Count    int
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Db       *gorm.DB
+		ApiKey   string
+		Datetime time.Time
+		Count    int
+	}
+	mock.lockIncrementCount.RLock()
+	calls = mock.calls.IncrementCount
+	mock.lockIncrementCount.RUnlock()
+	return calls
 }

@@ -15,6 +15,7 @@ import (
 
 type RequestLogUsecase interface {
 	RecordAPIHit(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error)
+	BatchConsumeClientRequestLogEvent(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error
 }
 
 var _ RequestLogUsecase = &RequestLogUsecaseImpl{}

@@ -87,11 +87,13 @@ func (g *gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (stri
 	entry := x.Logger.WithContext(ctx).WithFields(logrus.Fields{
 		"elapsed": time.Since(begin),
 		"rows":    rows,
+		"sql":     sql,
 	})
 
 	if err != nil {
-		entry.Error(sql)
+		entry.WithError(err).Error()
 	} else {
-		entry.Info(sql)
+		// with error nil so that in log we know is the query success or not
+		entry.WithError(nil).Info()
 	}
 }

@@ -20,6 +20,7 @@ const (
 	DatabasePoolLifetime = "database.pool.lifetime"
 
 	KafkaAddress = "kafka.address"
+	KafkaGroupID = "kafka.group_id"
 
 	LogLevel = "log.level"
 
