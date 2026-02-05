@@ -16,6 +16,7 @@ import (
 type RequestLogUsecase interface {
 	RecordAPIHit(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error)
 	BatchConsumeClientRequestLogEvent(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error
+	GetTop3ClientRequestCount24Hour(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error)
 }
 
 var _ RequestLogUsecase = &RequestLogUsecaseImpl{}
@@ -30,6 +31,7 @@ type RequestLogUsecaseImpl struct {
 	// repository
 	RequestLogRepository         repository.RequestLogRepository
 	ClientRequestCountRepository repository.ClientRequestCountRepository
+	ClientRepository             repository.ClientRepository
 
 	// Producer
 	Producer messaging.Producer
@@ -45,6 +47,7 @@ func NewRequestLogUsecase(
 	// repository
 	RequestLogRepository repository.RequestLogRepository,
 	ClientRequestCountRepository repository.ClientRequestCountRepository,
+	ClientRepository repository.ClientRepository,
 
 	// Producer
 	Producer messaging.Producer,
@@ -59,6 +62,7 @@ func NewRequestLogUsecase(
 		// repository
 		RequestLogRepository:         RequestLogRepository,
 		ClientRequestCountRepository: ClientRequestCountRepository,
+		ClientRepository:             ClientRepository,
 
 		// Producer
 		Producer: Producer,

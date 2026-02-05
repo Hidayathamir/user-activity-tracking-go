@@ -56,3 +56,27 @@ func (r *RequestLogController) RecordAPIHit(c *gin.Context) {
 
 	response.Data(c, http.StatusCreated, res)
 }
+
+// GetTop3ClientRequestCount24Hour godoc
+//
+//	@Summary		Get top 3 client request count in last 24 hours
+//	@Description	Get top 3 client request count in last 24 hours
+//	@Tags			RequestLog
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	response.WebResponse[model.ResGetTop3ClientRequestCount24Hour]
+//	@Router			/api/usage/top [get]
+//	@Security		ApiKeyJWTAuth
+func (r *RequestLogController) GetTop3ClientRequestCount24Hour(c *gin.Context) {
+	req := new(model.ReqGetTop3ClientRequestCount24Hour)
+
+	res, err := r.Usecase.GetTop3ClientRequestCount24Hour(c.Request.Context(), req)
+	if err != nil {
+		err = errkit.AddFuncName(err)
+		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()
+		response.Error(c, err)
+		return
+	}
+
+	response.Data(c, http.StatusOK, res)
+}

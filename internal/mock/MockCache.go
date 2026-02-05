@@ -6,6 +6,7 @@ package mock
 import (
 	"context"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"sync"
 	"time"
 )
@@ -20,6 +21,9 @@ var _ cache.Cache = &CacheMock{}
 //
 //		// make and configure a mocked cache.Cache
 //		mockedCache := &CacheMock{
+//			GetTop3ClientRequestCount24HourFunc: func(ctx context.Context) (model.APIKeyCountList, error) {
+//				panic("mock out the GetTop3ClientRequestCount24Hour method")
+//			},
 //			IncrementTopClientRequestCountHourlyFunc: func(ctx context.Context, timestamp time.Time, increment int, member string) error {
 //				panic("mock out the IncrementTopClientRequestCountHourly method")
 //			},
@@ -33,6 +37,9 @@ var _ cache.Cache = &CacheMock{}
 //
 //	}
 type CacheMock struct {
+	// GetTop3ClientRequestCount24HourFunc mocks the GetTop3ClientRequestCount24Hour method.
+	GetTop3ClientRequestCount24HourFunc func(ctx context.Context) (model.APIKeyCountList, error)
+
 	// IncrementTopClientRequestCountHourlyFunc mocks the IncrementTopClientRequestCountHourly method.
 	IncrementTopClientRequestCountHourlyFunc func(ctx context.Context, timestamp time.Time, increment int, member string) error
 
@@ -41,6 +48,11 @@ type CacheMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetTop3ClientRequestCount24Hour holds details about calls to the GetTop3ClientRequestCount24Hour method.
+		GetTop3ClientRequestCount24Hour []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
 		// IncrementTopClientRequestCountHourly holds details about calls to the IncrementTopClientRequestCountHourly method.
 		IncrementTopClientRequestCountHourly []struct {
 			// Ctx is the ctx argument value.
@@ -64,8 +76,41 @@ type CacheMock struct {
 			Value int
 		}
 	}
+	lockGetTop3ClientRequestCount24Hour      sync.RWMutex
 	lockIncrementTopClientRequestCountHourly sync.RWMutex
 	lockSetClientRequestCountIfExist         sync.RWMutex
+}
+
+// GetTop3ClientRequestCount24Hour calls GetTop3ClientRequestCount24HourFunc.
+func (mock *CacheMock) GetTop3ClientRequestCount24Hour(ctx context.Context) (model.APIKeyCountList, error) {
+	if mock.GetTop3ClientRequestCount24HourFunc == nil {
+		panic("CacheMock.GetTop3ClientRequestCount24HourFunc: method is nil but Cache.GetTop3ClientRequestCount24Hour was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetTop3ClientRequestCount24Hour.Lock()
+	mock.calls.GetTop3ClientRequestCount24Hour = append(mock.calls.GetTop3ClientRequestCount24Hour, callInfo)
+	mock.lockGetTop3ClientRequestCount24Hour.Unlock()
+	return mock.GetTop3ClientRequestCount24HourFunc(ctx)
+}
+
+// GetTop3ClientRequestCount24HourCalls gets all the calls that were made to GetTop3ClientRequestCount24Hour.
+// Check the length with:
+//
+//	len(mockedCache.GetTop3ClientRequestCount24HourCalls())
+func (mock *CacheMock) GetTop3ClientRequestCount24HourCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetTop3ClientRequestCount24Hour.RLock()
+	calls = mock.calls.GetTop3ClientRequestCount24Hour
+	mock.lockGetTop3ClientRequestCount24Hour.RUnlock()
+	return calls
 }
 
 // IncrementTopClientRequestCountHourly calls IncrementTopClientRequestCountHourlyFunc.

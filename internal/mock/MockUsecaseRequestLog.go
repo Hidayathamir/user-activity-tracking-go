@@ -23,6 +23,9 @@ var _ requestlog.RequestLogUsecase = &RequestLogUsecaseMock{}
 //			BatchConsumeClientRequestLogEventFunc: func(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error {
 //				panic("mock out the BatchConsumeClientRequestLogEvent method")
 //			},
+//			GetTop3ClientRequestCount24HourFunc: func(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error) {
+//				panic("mock out the GetTop3ClientRequestCount24Hour method")
+//			},
 //			RecordAPIHitFunc: func(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error) {
 //				panic("mock out the RecordAPIHit method")
 //			},
@@ -36,6 +39,9 @@ type RequestLogUsecaseMock struct {
 	// BatchConsumeClientRequestLogEventFunc mocks the BatchConsumeClientRequestLogEvent method.
 	BatchConsumeClientRequestLogEventFunc func(ctx context.Context, req *model.ReqBatchConsumeClientRequestLogEvent) error
 
+	// GetTop3ClientRequestCount24HourFunc mocks the GetTop3ClientRequestCount24Hour method.
+	GetTop3ClientRequestCount24HourFunc func(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error)
+
 	// RecordAPIHitFunc mocks the RecordAPIHit method.
 	RecordAPIHitFunc func(ctx context.Context, req *model.ReqRecordAPIHit) (*model.ResRecordAPIHit, error)
 
@@ -48,6 +54,13 @@ type RequestLogUsecaseMock struct {
 			// Req is the req argument value.
 			Req *model.ReqBatchConsumeClientRequestLogEvent
 		}
+		// GetTop3ClientRequestCount24Hour holds details about calls to the GetTop3ClientRequestCount24Hour method.
+		GetTop3ClientRequestCount24Hour []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Req is the req argument value.
+			Req *model.ReqGetTop3ClientRequestCount24Hour
+		}
 		// RecordAPIHit holds details about calls to the RecordAPIHit method.
 		RecordAPIHit []struct {
 			// Ctx is the ctx argument value.
@@ -57,6 +70,7 @@ type RequestLogUsecaseMock struct {
 		}
 	}
 	lockBatchConsumeClientRequestLogEvent sync.RWMutex
+	lockGetTop3ClientRequestCount24Hour   sync.RWMutex
 	lockRecordAPIHit                      sync.RWMutex
 }
 
@@ -93,6 +107,42 @@ func (mock *RequestLogUsecaseMock) BatchConsumeClientRequestLogEventCalls() []st
 	mock.lockBatchConsumeClientRequestLogEvent.RLock()
 	calls = mock.calls.BatchConsumeClientRequestLogEvent
 	mock.lockBatchConsumeClientRequestLogEvent.RUnlock()
+	return calls
+}
+
+// GetTop3ClientRequestCount24Hour calls GetTop3ClientRequestCount24HourFunc.
+func (mock *RequestLogUsecaseMock) GetTop3ClientRequestCount24Hour(ctx context.Context, req *model.ReqGetTop3ClientRequestCount24Hour) (*model.ResGetTop3ClientRequestCount24Hour, error) {
+	if mock.GetTop3ClientRequestCount24HourFunc == nil {
+		panic("RequestLogUsecaseMock.GetTop3ClientRequestCount24HourFunc: method is nil but RequestLogUsecase.GetTop3ClientRequestCount24Hour was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Req *model.ReqGetTop3ClientRequestCount24Hour
+	}{
+		Ctx: ctx,
+		Req: req,
+	}
+	mock.lockGetTop3ClientRequestCount24Hour.Lock()
+	mock.calls.GetTop3ClientRequestCount24Hour = append(mock.calls.GetTop3ClientRequestCount24Hour, callInfo)
+	mock.lockGetTop3ClientRequestCount24Hour.Unlock()
+	return mock.GetTop3ClientRequestCount24HourFunc(ctx, req)
+}
+
+// GetTop3ClientRequestCount24HourCalls gets all the calls that were made to GetTop3ClientRequestCount24Hour.
+// Check the length with:
+//
+//	len(mockedRequestLogUsecase.GetTop3ClientRequestCount24HourCalls())
+func (mock *RequestLogUsecaseMock) GetTop3ClientRequestCount24HourCalls() []struct {
+	Ctx context.Context
+	Req *model.ReqGetTop3ClientRequestCount24Hour
+} {
+	var calls []struct {
+		Ctx context.Context
+		Req *model.ReqGetTop3ClientRequestCount24Hour
+	}
+	mock.lockGetTop3ClientRequestCount24Hour.RLock()
+	calls = mock.calls.GetTop3ClientRequestCount24Hour
+	mock.lockGetTop3ClientRequestCount24Hour.RUnlock()
 	return calls
 }
 

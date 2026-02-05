@@ -17,6 +17,7 @@ import (
 type ClientRepository interface {
 	Create(ctx context.Context, db *gorm.DB, client *entity.Client) error
 	FindByName(ctx context.Context, db *gorm.DB, client *entity.Client, name string) error
+	FindByAPIKey(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error
 }
 
 var _ ClientRepository = &ClientRepositoryImpl{}
@@ -44,6 +45,15 @@ func (c *ClientRepositoryImpl) Create(ctx context.Context, db *gorm.DB, client *
 
 func (c *ClientRepositoryImpl) FindByName(ctx context.Context, db *gorm.DB, client *entity.Client, name string) error {
 	err := db.WithContext(ctx).Where(column.Name.Eq(name)).Take(client).Error
+	if err != nil {
+		err = errkit.NotFound(err)
+		return errkit.AddFuncName(err)
+	}
+	return nil
+}
+
+func (c *ClientRepositoryImpl) FindByAPIKey(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error {
+	err := db.WithContext(ctx).Where(column.APIKey.Eq(apiKey)).Take(client).Error
 	if err != nil {
 		err = errkit.NotFound(err)
 		return errkit.AddFuncName(err)

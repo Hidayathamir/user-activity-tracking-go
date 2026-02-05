@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/layer"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/sirupsen/logrus"
@@ -34,4 +35,15 @@ func (c *ClientRequestCountRepositoryMwLogger) IncrementCount(ctx context.Contex
 	x.LogMw(ctx, fields, err, layer.Repository)
 
 	return newCount, err
+}
+
+func (c *ClientRequestCountRepositoryMwLogger) GetTop3ClientRequestCount24Hour(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error) {
+	res, err := c.Next.GetTop3ClientRequestCount24Hour(ctx, db)
+
+	fields := logrus.Fields{
+		"res": res,
+	}
+	x.LogMw(ctx, fields, err, layer.Repository)
+
+	return res, err
 }

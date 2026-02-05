@@ -24,6 +24,9 @@ var _ repository.ClientRepository = &ClientRepositoryMock{}
 //			CreateFunc: func(ctx context.Context, db *gorm.DB, client *entity.Client) error {
 //				panic("mock out the Create method")
 //			},
+//			FindByAPIKeyFunc: func(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error {
+//				panic("mock out the FindByAPIKey method")
+//			},
 //			FindByNameFunc: func(ctx context.Context, db *gorm.DB, client *entity.Client, name string) error {
 //				panic("mock out the FindByName method")
 //			},
@@ -36,6 +39,9 @@ var _ repository.ClientRepository = &ClientRepositoryMock{}
 type ClientRepositoryMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, db *gorm.DB, client *entity.Client) error
+
+	// FindByAPIKeyFunc mocks the FindByAPIKey method.
+	FindByAPIKeyFunc func(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error
 
 	// FindByNameFunc mocks the FindByName method.
 	FindByNameFunc func(ctx context.Context, db *gorm.DB, client *entity.Client, name string) error
@@ -51,6 +57,17 @@ type ClientRepositoryMock struct {
 			// Client is the client argument value.
 			Client *entity.Client
 		}
+		// FindByAPIKey holds details about calls to the FindByAPIKey method.
+		FindByAPIKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db *gorm.DB
+			// Client is the client argument value.
+			Client *entity.Client
+			// ApiKey is the apiKey argument value.
+			ApiKey string
+		}
 		// FindByName holds details about calls to the FindByName method.
 		FindByName []struct {
 			// Ctx is the ctx argument value.
@@ -63,8 +80,9 @@ type ClientRepositoryMock struct {
 			Name string
 		}
 	}
-	lockCreate     sync.RWMutex
-	lockFindByName sync.RWMutex
+	lockCreate       sync.RWMutex
+	lockFindByAPIKey sync.RWMutex
+	lockFindByName   sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -104,6 +122,50 @@ func (mock *ClientRepositoryMock) CreateCalls() []struct {
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
 	mock.lockCreate.RUnlock()
+	return calls
+}
+
+// FindByAPIKey calls FindByAPIKeyFunc.
+func (mock *ClientRepositoryMock) FindByAPIKey(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error {
+	if mock.FindByAPIKeyFunc == nil {
+		panic("ClientRepositoryMock.FindByAPIKeyFunc: method is nil but ClientRepository.FindByAPIKey was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Db     *gorm.DB
+		Client *entity.Client
+		ApiKey string
+	}{
+		Ctx:    ctx,
+		Db:     db,
+		Client: client,
+		ApiKey: apiKey,
+	}
+	mock.lockFindByAPIKey.Lock()
+	mock.calls.FindByAPIKey = append(mock.calls.FindByAPIKey, callInfo)
+	mock.lockFindByAPIKey.Unlock()
+	return mock.FindByAPIKeyFunc(ctx, db, client, apiKey)
+}
+
+// FindByAPIKeyCalls gets all the calls that were made to FindByAPIKey.
+// Check the length with:
+//
+//	len(mockedClientRepository.FindByAPIKeyCalls())
+func (mock *ClientRepositoryMock) FindByAPIKeyCalls() []struct {
+	Ctx    context.Context
+	Db     *gorm.DB
+	Client *entity.Client
+	ApiKey string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Db     *gorm.DB
+		Client *entity.Client
+		ApiKey string
+	}
+	mock.lockFindByAPIKey.RLock()
+	calls = mock.calls.FindByAPIKey
+	mock.lockFindByAPIKey.RUnlock()
 	return calls
 }
 

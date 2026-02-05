@@ -23,6 +23,19 @@ definitions:
       paging:
         $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
     type: object
+  ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetTop3ClientRequestCount24Hour
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetTop3ClientRequestCount24Hour'
+      error_detail:
+        items:
+          type: string
+        type: array
+      error_message:
+        type: string
+      paging:
+        $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
   ? github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResLogin
   : properties:
       data:
@@ -61,6 +74,13 @@ definitions:
         type: string
       paging:
         $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.PageMetadata'
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.NameCount:
+    properties:
+      count:
+        type: integer
+      name:
+        type: string
     type: object
   github_com_Hidayathamir_user-activity-tracking-go_internal_model.ReqLogin:
     properties:
@@ -116,6 +136,13 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResGetTop3ClientRequestCount24Hour:
+    properties:
+      name_count_list:
+        items:
+          $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_model.NameCount'
+        type: array
     type: object
   github_com_Hidayathamir_user-activity-tracking-go_internal_model.ResLogin:
     properties:
@@ -223,6 +250,23 @@ paths:
       summary: Register a new client
       tags:
       - Client
+  /api/usage/top:
+    get:
+      consumes:
+      - application/json
+      description: Get top 3 client request count in last 24 hours
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Hidayathamir_user-activity-tracking-go_internal_delivery_http_response.WebResponse-github_com_Hidayathamir_user-activity-tracking-go_internal_model_ResGetTop3ClientRequestCount24Hour'
+      security:
+      - ApiKeyJWTAuth: []
+      summary: Get top 3 client request count in last 24 hours
+      tags:
+      - RequestLog
 securityDefinitions:
   ApiKeyJWTAuth:
     description: JWT authorization

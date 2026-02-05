@@ -8,6 +8,10 @@ run-worker:
 	mkdir -p logs
 	go run cmd/worker/main.go >> logs/worker_log.jsonl 2>&1
 
+run-cron:
+	mkdir -p logs
+	go run cmd/cron/main.go >> logs/cron_log.jsonl 2>&1
+
 #################################### 
 
 migrate:

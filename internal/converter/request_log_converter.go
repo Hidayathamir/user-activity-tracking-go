@@ -3,10 +3,12 @@ package converter
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
+	"github.com/redis/go-redis/v9"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -46,4 +48,22 @@ func KafkaMessageListToModelReqBatchConsumeClientRequestLogEvent(ctx context.Con
 
 		req.EventList = append(req.EventList, event)
 	}
+}
+
+func RedisZToModelAPIKeyCount(z *redis.Z, apiKeyToCount *model.APIKeyCount) {
+	apiKeyToCount.APIKey = fmt.Sprint(z.Member)
+	apiKeyToCount.Count = int(z.Score)
+}
+
+func EntityTop3ClientRequestCountListToModelAPIKeyCountList(top3ClientRequestCountList *entity.Top3ClientRequestCountList, apiKeyCountList *model.APIKeyCountList) {
+	for _, v := range *top3ClientRequestCountList {
+		apiKeyCount := model.APIKeyCount{}
+		EntityTop3ClientRequestCountToModelAPIKeyCount(&v, &apiKeyCount)
+		*apiKeyCountList = append(*apiKeyCountList, apiKeyCount)
+	}
+}
+
+func EntityTop3ClientRequestCountToModelAPIKeyCount(top3ClientRequestCount *entity.Top3ClientRequestCount, apiKeyCount *model.APIKeyCount) {
+	apiKeyCount.APIKey = top3ClientRequestCount.APIKey
+	apiKeyCount.Count = top3ClientRequestCount.Count
 }

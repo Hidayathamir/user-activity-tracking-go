@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/converter"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/cachekey"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
@@ -14,9 +16,12 @@ import (
 
 //go:generate moq -out=../mock/MockCache.go -pkg=mock . Cache
 
+// TODO: if redis down, use in memory cache
+
 type Cache interface {
 	SetClientRequestCountIfExist(ctx context.Context, apiKey string, datetime time.Time, value int) error
 	IncrementTopClientRequestCountHourly(ctx context.Context, timestamp time.Time, increment int, member string) error
+	GetTop3ClientRequestCount24Hour(ctx context.Context) (model.APIKeyCountList, error)
 }
 
 var _ Cache = &CacheImpl{}
@@ -64,4 +69,26 @@ func (c *CacheImpl) IncrementTopClientRequestCountHourly(ctx context.Context, ti
 	}
 
 	return nil
+}
+
+func (c *CacheImpl) GetTop3ClientRequestCount24Hour(ctx context.Context) (model.APIKeyCountList, error) {
+	result, err := c.rdb.ZRangeArgsWithScores(ctx, redis.ZRangeArgs{
+		Key:   cachekey.TopClientRequestCount24H,
+		Start: 0,
+		Stop:  2,
+		Rev:   true,
+	}).Result()
+	if err != nil {
+		return nil, errkit.AddFuncName(err)
+	}
+
+	res := model.APIKeyCountList{}
+	for _, z := range result {
+		apiKeyCount := new(model.APIKeyCount)
+		converter.RedisZToModelAPIKeyCount(&z, apiKeyCount)
+
+		res = append(res, *apiKeyCount)
+	}
+
+	return res, nil
 }

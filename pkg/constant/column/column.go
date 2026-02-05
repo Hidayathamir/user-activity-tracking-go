@@ -10,8 +10,16 @@ func (c Column) Eq(value any) (string, any) {
 	return string(c) + " = ?", value
 }
 
+func (c Column) GTE(value any) (string, any) {
+	return string(c) + " >= ?", value
+}
+
 func (c Column) Plus(value any) (string, any) {
 	return string(c) + " + ?", value
+}
+
+func (c Column) Desc() string {
+	return string(c) + " DESC"
 }
 
 const (

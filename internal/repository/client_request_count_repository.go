@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/converter"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/column"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/table"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
@@ -16,6 +19,7 @@ import (
 
 type ClientRequestCountRepository interface {
 	IncrementCount(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error)
+	GetTop3ClientRequestCount24Hour(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error)
 }
 
 var _ ClientRequestCountRepository = &ClientRequestCountRepositoryImpl{}
@@ -62,4 +66,26 @@ func (r *ClientRequestCountRepositoryImpl) IncrementCount(ctx context.Context, d
 	}
 
 	return newCount, nil
+}
+
+func (r *ClientRequestCountRepositoryImpl) GetTop3ClientRequestCount24Hour(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error) {
+	var top3ClientRequestCountList entity.Top3ClientRequestCountList
+
+	_24HourAgo := time.Now().Add(-24 * time.Hour)
+
+	err := db.WithContext(ctx).
+		Table(table.ClientRequestCount).
+		Select([]string{column.APIKey.Str(), column.Count.Str()}).
+		Where(column.Datetime.GTE(_24HourAgo)).
+		Order(column.Count.Desc()).
+		Limit(3).
+		Scan(&top3ClientRequestCountList).Error
+	if err != nil {
+		return nil, errkit.AddFuncName(err)
+	}
+
+	res := model.APIKeyCountList{}
+	converter.EntityTop3ClientRequestCountListToModelAPIKeyCountList(&top3ClientRequestCountList, &res)
+
+	return res, nil
 }

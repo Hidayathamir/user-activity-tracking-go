@@ -5,6 +5,7 @@ package mock
 
 import (
 	"context"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
 	"gorm.io/gorm"
 	"sync"
@@ -21,6 +22,9 @@ var _ repository.ClientRequestCountRepository = &ClientRequestCountRepositoryMoc
 //
 //		// make and configure a mocked repository.ClientRequestCountRepository
 //		mockedClientRequestCountRepository := &ClientRequestCountRepositoryMock{
+//			GetTop3ClientRequestCount24HourFunc: func(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error) {
+//				panic("mock out the GetTop3ClientRequestCount24Hour method")
+//			},
 //			IncrementCountFunc: func(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error) {
 //				panic("mock out the IncrementCount method")
 //			},
@@ -31,11 +35,21 @@ var _ repository.ClientRequestCountRepository = &ClientRequestCountRepositoryMoc
 //
 //	}
 type ClientRequestCountRepositoryMock struct {
+	// GetTop3ClientRequestCount24HourFunc mocks the GetTop3ClientRequestCount24Hour method.
+	GetTop3ClientRequestCount24HourFunc func(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error)
+
 	// IncrementCountFunc mocks the IncrementCount method.
 	IncrementCountFunc func(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetTop3ClientRequestCount24Hour holds details about calls to the GetTop3ClientRequestCount24Hour method.
+		GetTop3ClientRequestCount24Hour []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db *gorm.DB
+		}
 		// IncrementCount holds details about calls to the IncrementCount method.
 		IncrementCount []struct {
 			// Ctx is the ctx argument value.
@@ -50,7 +64,44 @@ type ClientRequestCountRepositoryMock struct {
 			Count int
 		}
 	}
-	lockIncrementCount sync.RWMutex
+	lockGetTop3ClientRequestCount24Hour sync.RWMutex
+	lockIncrementCount                  sync.RWMutex
+}
+
+// GetTop3ClientRequestCount24Hour calls GetTop3ClientRequestCount24HourFunc.
+func (mock *ClientRequestCountRepositoryMock) GetTop3ClientRequestCount24Hour(ctx context.Context, db *gorm.DB) (model.APIKeyCountList, error) {
+	if mock.GetTop3ClientRequestCount24HourFunc == nil {
+		panic("ClientRequestCountRepositoryMock.GetTop3ClientRequestCount24HourFunc: method is nil but ClientRequestCountRepository.GetTop3ClientRequestCount24Hour was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Db  *gorm.DB
+	}{
+		Ctx: ctx,
+		Db:  db,
+	}
+	mock.lockGetTop3ClientRequestCount24Hour.Lock()
+	mock.calls.GetTop3ClientRequestCount24Hour = append(mock.calls.GetTop3ClientRequestCount24Hour, callInfo)
+	mock.lockGetTop3ClientRequestCount24Hour.Unlock()
+	return mock.GetTop3ClientRequestCount24HourFunc(ctx, db)
+}
+
+// GetTop3ClientRequestCount24HourCalls gets all the calls that were made to GetTop3ClientRequestCount24Hour.
+// Check the length with:
+//
+//	len(mockedClientRequestCountRepository.GetTop3ClientRequestCount24HourCalls())
+func (mock *ClientRequestCountRepositoryMock) GetTop3ClientRequestCount24HourCalls() []struct {
+	Ctx context.Context
+	Db  *gorm.DB
+} {
+	var calls []struct {
+		Ctx context.Context
+		Db  *gorm.DB
+	}
+	mock.lockGetTop3ClientRequestCount24Hour.RLock()
+	calls = mock.calls.GetTop3ClientRequestCount24Hour
+	mock.lockGetTop3ClientRequestCount24Hour.RUnlock()
+	return calls
 }
 
 // IncrementCount calls IncrementCountFunc.

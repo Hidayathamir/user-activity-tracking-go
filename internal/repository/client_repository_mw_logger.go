@@ -38,6 +38,19 @@ func (c *ClientRepositoryMwLogger) FindByName(ctx context.Context, db *gorm.DB, 
 
 	fields := logrus.Fields{
 		"client": client,
+		"name":   name,
+	}
+	x.LogMw(ctx, fields, err, layer.Repository)
+
+	return err
+}
+
+func (c *ClientRepositoryMwLogger) FindByAPIKey(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error {
+	err := c.Next.FindByAPIKey(ctx, db, client, apiKey)
+
+	fields := logrus.Fields{
+		"client": client,
+		"apiKey": apiKey,
 	}
 	x.LogMw(ctx, fields, err, layer.Repository)
 

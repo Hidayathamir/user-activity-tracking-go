@@ -15,4 +15,5 @@ func Setup(ginEngine *gin.Engine, controllers *config.Controllers, middlewares *
 	ginEngine.GET("/api/client/me", middlewares.AuthMiddleware, controllers.ClientController.GetClientDetail)
 
 	ginEngine.POST("/api/logs", middlewares.InternalServiceMiddleware, controllers.RequestLogController.RecordAPIHit)
+	ginEngine.GET("/api/usage/top", middlewares.AuthMiddleware, controllers.RequestLogController.GetTop3ClientRequestCount24Hour)
 }

@@ -52,7 +52,7 @@ func SetupUsecases(
 	ClientUsecase = client.NewClientUsecaseMwLogger(ClientUsecase)
 
 	var RequestLogUsecase requestlog.RequestLogUsecase
-	RequestLogUsecase = requestlog.NewRequestLogUsecase(viperConfig, db, Cache, RequestLogRepository, ClientRequestCountRepository, Producer)
+	RequestLogUsecase = requestlog.NewRequestLogUsecase(viperConfig, db, Cache, RequestLogRepository, ClientRequestCountRepository, ClientRepository, Producer)
 	RequestLogUsecase = requestlog.NewRequestLogUsecaseMwLogger(RequestLogUsecase)
 
 	// returning
