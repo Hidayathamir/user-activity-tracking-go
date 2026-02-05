@@ -9,6 +9,11 @@ import (
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/timekit"
 )
 
+const (
+	TopClientRequestCount24H           = "top_client_request_count:24h"
+	TopClientRequestCount24HSourceKeys = "top_client_request_count:24h_source_keys"
+)
+
 // BuildClientRequestCountKey -.
 // make sure argument datetime is truncated to hour.
 func BuildClientRequestCountKey(apiKey string, datetime time.Time) (key string) {

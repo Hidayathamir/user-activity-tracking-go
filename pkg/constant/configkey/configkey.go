@@ -9,6 +9,8 @@ const (
 	AuthJWTIssuer        = "auth.jwt.issuer"
 	AuthJWTExpireSeconds = "auth.jwt.expire_seconds"
 
+	CronPattern = "cron.pattern"
+
 	DatabaseMigrations   = "database.migrations"
 	DatabaseUsername     = "database.username"
 	DatabasePassword     = "database.password"

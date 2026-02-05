@@ -12,6 +12,9 @@
       "expire_seconds": 259200
     }
   },
+  "cron": {
+    "pattern": "@every 5m"
+  },
   "database": {
     "migrations": "db/migrations",
     "username": "postgres",
