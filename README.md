@@ -4,6 +4,12 @@ A high-performance user activity tracking system built with Go, featuring real-t
 
 ![Architecture](readme_asset/excalidraw/user-activity-tracking-go.png)
 
+## 📺 Video Explanation
+
+Watch the full explanation of this project on YouTube:
+
+[![YouTube Video](https://img.shields.io/badge/YouTube-Watch%20Video-red?style=for-the-badge&logo=youtube)](https://youtu.be/BbduLHBZ8Ns)
+
 ## Features
 
 - **Real-time Request Logging** - Track API hits with async processing via Kafka
