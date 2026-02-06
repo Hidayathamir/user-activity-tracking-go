@@ -7,6 +7,7 @@ import (
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/column"
+	"github.com/Hidayathamir/user-activity-tracking-go/pkg/dbretry"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -33,7 +34,9 @@ func NewClientRepository(cfg *viper.Viper) *ClientRepositoryImpl {
 }
 
 func (c *ClientRepositoryImpl) Create(ctx context.Context, db *gorm.DB, client *entity.Client) error {
-	err := db.WithContext(ctx).Create(client).Error
+	err := dbretry.Do(func() error {
+		return db.WithContext(ctx).Create(client).Error
+	})
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			err = errkit.SetHTTPError(err, http.StatusConflict)
@@ -44,7 +47,9 @@ func (c *ClientRepositoryImpl) Create(ctx context.Context, db *gorm.DB, client *
 }
 
 func (c *ClientRepositoryImpl) FindByName(ctx context.Context, db *gorm.DB, client *entity.Client, name string) error {
-	err := db.WithContext(ctx).Where(column.Name.Eq(name)).Take(client).Error
+	err := dbretry.Do(func() error {
+		return db.WithContext(ctx).Where(column.Name.Eq(name)).Take(client).Error
+	})
 	if err != nil {
 		err = errkit.NotFound(err)
 		return errkit.AddFuncName(err)
@@ -53,7 +58,9 @@ func (c *ClientRepositoryImpl) FindByName(ctx context.Context, db *gorm.DB, clie
 }
 
 func (c *ClientRepositoryImpl) FindByAPIKey(ctx context.Context, db *gorm.DB, client *entity.Client, apiKey string) error {
-	err := db.WithContext(ctx).Where(column.APIKey.Eq(apiKey)).Take(client).Error
+	err := dbretry.Do(func() error {
+		return db.WithContext(ctx).Where(column.APIKey.Eq(apiKey)).Take(client).Error
+	})
 	if err != nil {
 		err = errkit.NotFound(err)
 		return errkit.AddFuncName(err)

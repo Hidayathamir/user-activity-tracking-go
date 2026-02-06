@@ -9,6 +9,7 @@ import (
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/column"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/table"
+	"github.com/Hidayathamir/user-activity-tracking-go/pkg/dbretry"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/spf13/viper"
@@ -61,7 +62,9 @@ func (r *ClientRequestCountRepositoryImpl) IncrementCount(ctx context.Context, d
 	}
 
 	var newCount int
-	err = db.WithContext(ctx).Raw(sqlStr, args...).Scan(&newCount).Error
+	err = dbretry.Do(func() error {
+		return db.WithContext(ctx).Raw(sqlStr, args...).Scan(&newCount).Error
+	})
 	if err != nil {
 		return 0, errkit.AddFuncName(err)
 	}
@@ -74,13 +77,15 @@ func (r *ClientRequestCountRepositoryImpl) GetTop3ClientRequestCount24Hour(ctx c
 
 	_24HourAgo := time.Now().UTC().Add(-24 * time.Hour)
 
-	err := db.WithContext(ctx).
-		Table(table.ClientRequestCount).
-		Select([]string{column.APIKey.Str(), column.Count.Str()}).
-		Where(column.Datetime.GTE(_24HourAgo)).
-		Order(column.Count.Desc()).
-		Limit(3).
-		Scan(&top3ClientRequestCountList).Error
+	err := dbretry.Do(func() error {
+		return db.WithContext(ctx).
+			Table(table.ClientRequestCount).
+			Select([]string{column.APIKey.Str(), column.Count.Str()}).
+			Where(column.Datetime.GTE(_24HourAgo)).
+			Order(column.Count.Desc()).
+			Limit(3).
+			Scan(&top3ClientRequestCountList).Error
+	})
 	if err != nil {
 		return nil, errkit.AddFuncName(err)
 	}
@@ -96,13 +101,15 @@ func (r *ClientRequestCountRepositoryImpl) GetCountByAPIKeyAndDate(ctx context.C
 	startOfNextDay := startOfDay.AddDate(0, 0, 1)
 
 	var count int
-	err := db.WithContext(ctx).
-		Table(table.ClientRequestCount).
-		Select("COALESCE(SUM(" + column.Count.Str() + "), 0)").
-		Where(column.APIKey.Eq(apiKey)).
-		Where(column.Datetime.GTE(startOfDay)).
-		Where(column.Datetime.LT(startOfNextDay)).
-		Scan(&count).Error
+	err := dbretry.Do(func() error {
+		return db.WithContext(ctx).
+			Table(table.ClientRequestCount).
+			Select("COALESCE(SUM(" + column.Count.Str() + "), 0)").
+			Where(column.APIKey.Eq(apiKey)).
+			Where(column.Datetime.GTE(startOfDay)).
+			Where(column.Datetime.LT(startOfNextDay)).
+			Scan(&count).Error
+	})
 	if err != nil {
 		return 0, errkit.AddFuncName(err)
 	}

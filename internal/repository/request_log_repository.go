@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
+	"github.com/Hidayathamir/user-activity-tracking-go/pkg/dbretry"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -28,7 +29,9 @@ func NewRequestLogRepository(cfg *viper.Viper) *RequestLogRepositoryImpl {
 }
 
 func (r *RequestLogRepositoryImpl) CreateAll(ctx context.Context, db *gorm.DB, requestLogList *entity.RequestLogList) error {
-	err := db.WithContext(ctx).Create(requestLogList).Error
+	err := dbretry.Do(func() error {
+		return db.WithContext(ctx).Create(requestLogList).Error
+	})
 	if err != nil {
 		return errkit.AddFuncName(err)
 	}
