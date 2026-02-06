@@ -8,7 +8,8 @@ A high-performance user activity tracking system built with Go, featuring real-t
 
 Watch the full explanation of this project on YouTube:
 
-[![YouTube Video](https://img.shields.io/badge/YouTube-Watch%20Video-red?style=for-the-badge&logo=youtube)](https://youtu.be/BbduLHBZ8Ns)
+[![Part 1](https://img.shields.io/badge/YouTube-Part%201-red?style=for-the-badge&logo=youtube)](https://youtu.be/BbduLHBZ8Ns)
+[![Part 2](https://img.shields.io/badge/YouTube-Part%202-red?style=for-the-badge&logo=youtube)](https://youtu.be/AGgeeVyY5ZM)
 
 ## Features
 
