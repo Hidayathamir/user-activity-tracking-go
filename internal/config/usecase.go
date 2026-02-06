@@ -1,11 +1,14 @@
 package config
 
 import (
+	"time"
+
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/gateway/messaging"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/usecase/client"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/usecase/requestlog"
+	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/redis/go-redis/v9"
 	"github.com/segmentio/kafka-go"
 	"github.com/spf13/viper"
@@ -23,9 +26,13 @@ func SetupUsecases(
 	rdb *redis.Client,
 	kafkaWriter *kafka.Writer,
 ) *Usecases {
+	const maxKey = 1000
+	const ttl = 60 * time.Second
+	inMemCache := expirable.NewLRU[string, int](maxKey, nil, ttl)
+
 	// setup caches
 	var Cache cache.Cache
-	Cache = cache.NewCache(viperConfig, rdb)
+	Cache = cache.NewCache(viperConfig, rdb, inMemCache)
 	Cache = cache.NewCacheMwLogger(Cache)
 
 	// setup producer

@@ -9,6 +9,7 @@ import (
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/cachekey"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
+	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -29,14 +30,16 @@ type Cache interface {
 var _ Cache = &CacheImpl{}
 
 type CacheImpl struct {
-	Config *viper.Viper
-	rdb    *redis.Client
+	Config     *viper.Viper
+	rdb        *redis.Client
+	inMemCache *expirable.LRU[string, int]
 }
 
-func NewCache(cfg *viper.Viper, rdb *redis.Client) *CacheImpl {
+func NewCache(cfg *viper.Viper, rdb *redis.Client, inMemCache *expirable.LRU[string, int]) *CacheImpl {
 	return &CacheImpl{
-		Config: cfg,
-		rdb:    rdb,
+		Config:     cfg,
+		rdb:        rdb,
+		inMemCache: inMemCache,
 	}
 }
 
@@ -49,6 +52,11 @@ func (c *CacheImpl) SetClientRequestCountIfExist(ctx context.Context, apiKey str
 		KeepTTL: true,
 	}).Result()
 	if err != nil {
+		if isRedisUnavailable(err) {
+			x.Logger.WithError(err).WithContext(ctx).Warn("redis unavailable, using in memory cache")
+			c.inMemCache.Add(key, value)
+			return nil
+		}
 		return errkit.AddFuncName(err)
 	}
 
@@ -67,6 +75,11 @@ func (c *CacheImpl) SetClientRequestCount(ctx context.Context, apiKey string, da
 
 	err := c.rdb.Set(ctx, string(key), value, ttl).Err()
 	if err != nil {
+		if isRedisUnavailable(err) {
+			x.Logger.WithError(err).WithContext(ctx).Warn("redis unavailable, using in memory cache")
+			c.inMemCache.Add(key, value)
+			return nil
+		}
 		return errkit.AddFuncName(err)
 	}
 
@@ -111,8 +124,16 @@ func (c *CacheImpl) GetCountByAPIKeyAndDate(ctx context.Context, apiKey string, 
 
 	val, err := c.rdb.Get(ctx, key).Int()
 	if err != nil {
+		if isRedisUnavailable(err) {
+			x.Logger.WithError(err).WithContext(ctx).Warn("redis unavailable, using in memory cache")
+			localVal, ok := c.inMemCache.Get(key)
+			if !ok {
+				err := redis.Nil
+				return 0, errkit.AddFuncName(err)
+			}
+			return localVal, nil
+		}
 		return 0, errkit.AddFuncName(err)
 	}
-
 	return val, nil
 }
