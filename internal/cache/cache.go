@@ -17,8 +17,6 @@ import (
 
 //go:generate moq -out=../mock/MockCache.go -pkg=mock . Cache
 
-// TODO: if redis down, use in memory cache
-
 type Cache interface {
 	SetClientRequestCountIfExist(ctx context.Context, apiKey string, datetime time.Time, value int) error
 	SetClientRequestCount(ctx context.Context, apiKey string, datetime time.Time, value int, ttl time.Duration) error
