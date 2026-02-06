@@ -65,5 +65,5 @@ func EntityTop3ClientRequestCountListToModelAPIKeyCountList(top3ClientRequestCou
 
 func EntityTop3ClientRequestCountToModelAPIKeyCount(top3ClientRequestCount *entity.Top3ClientRequestCount, apiKeyCount *model.APIKeyCount) {
 	apiKeyCount.APIKey = top3ClientRequestCount.APIKey
-	apiKeyCount.Count = top3ClientRequestCount.Count
+	apiKeyCount.Count = top3ClientRequestCount.TotalSum
 }

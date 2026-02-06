@@ -1,9 +1,17 @@
 package column
 
+import (
+	"fmt"
+)
+
 type Column string
 
 func (c Column) Str() string {
 	return string(c)
+}
+
+func (c Column) SumAs(as string) string {
+	return fmt.Sprintf("SUM(%s) as %s", string(c), as)
 }
 
 func (c Column) Eq(value any) (string, any) {

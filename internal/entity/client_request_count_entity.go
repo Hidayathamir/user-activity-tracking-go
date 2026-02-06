@@ -25,8 +25,8 @@ func (c *ClientRequestCount) TableName() string {
 type ClientRequestCountList []ClientRequestCount
 
 type Top3ClientRequestCount struct {
-	APIKey string `gorm:"column:api_key"`
-	Count  int    `gorm:"column:count"`
+	APIKey   string `gorm:"column:api_key"`
+	TotalSum int    `gorm:"column:total_sum"`
 }
 
 type Top3ClientRequestCountList []Top3ClientRequestCount

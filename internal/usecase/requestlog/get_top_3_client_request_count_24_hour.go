@@ -17,9 +17,7 @@ func (r *RequestLogUsecaseImpl) GetTop3ClientRequestCount24Hour(ctx context.Cont
 	}
 
 	apiKeyCountList, err := r.Cache.GetTop3ClientRequestCount24Hour(ctx)
-	if err != nil {
-		return nil, errkit.AddFuncName(err)
-	}
+	x.LogIfErrContext(ctx, err)
 
 	if len(apiKeyCountList) == 0 {
 		apiKeyCountList, err = r.ClientRequestCountRepository.GetTop3ClientRequestCount24Hour(ctx, r.DB)

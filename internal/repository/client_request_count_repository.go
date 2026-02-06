@@ -80,9 +80,10 @@ func (r *ClientRequestCountRepositoryImpl) GetTop3ClientRequestCount24Hour(ctx c
 	err := dbretry.Do(func() error {
 		return db.WithContext(ctx).
 			Table(table.ClientRequestCount).
-			Select([]string{column.APIKey.Str(), column.Count.Str()}).
+			Select([]string{column.APIKey.Str(), column.Count.SumAs("total_sum")}).
 			Where(column.Datetime.GTE(_24HourAgo)).
-			Order(column.Count.Desc()).
+			Group(column.APIKey.Str()).
+			Order("total_sum DESC").
 			Limit(3).
 			Scan(&top3ClientRequestCountList).Error
 	})
