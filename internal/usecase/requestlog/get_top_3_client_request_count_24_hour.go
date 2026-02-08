@@ -16,11 +16,11 @@ func (r *RequestLogUsecaseImpl) GetTop3ClientRequestCount24Hour(ctx context.Cont
 		return nil, errkit.AddFuncName(err)
 	}
 
-	apiKeyCountList, err := r.Cache.GetTop3ClientRequestCount24Hour(ctx)
+	apiKeyCountList, err := r.cache.GetTop3ClientRequestCount24Hour(ctx)
 	x.LogIfErrContext(ctx, err)
 
 	if len(apiKeyCountList) == 0 {
-		apiKeyCountList, err = r.ClientRequestCountRepository.GetTop3ClientRequestCount24Hour(ctx, r.DB)
+		apiKeyCountList, err = r.clientRequestCountRepository.GetTop3ClientRequestCount24Hour(ctx, r.db)
 		if err != nil {
 			return nil, errkit.AddFuncName(err)
 		}
@@ -30,7 +30,7 @@ func (r *RequestLogUsecaseImpl) GetTop3ClientRequestCount24Hour(ctx context.Cont
 
 	for _, v := range apiKeyCountList {
 		client := new(entity.Client)
-		err := r.ClientRepository.FindByAPIKey(ctx, r.DB, client, v.APIKey)
+		err := r.clientRepository.FindByAPIKey(ctx, r.db, client, v.APIKey)
 		if err != nil {
 			return nil, errkit.AddFuncName(err)
 		}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/dependency_injection"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/topic"
 	"github.com/segmentio/kafka-go"
 )
@@ -31,7 +31,7 @@ type TopicHandler struct {
 	BatchHandler     BatchHandler
 }
 
-func Setup(consumers *config.Consumers) TopicHandler {
+func Setup(consumers *dependency_injection.Consumers) TopicHandler {
 	return TopicHandler{
 		SingleMsgHandler: SingleMsgHandler{},
 		BatchHandler: BatchHandler{

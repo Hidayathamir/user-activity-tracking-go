@@ -16,7 +16,7 @@ func (r *RequestLogUsecaseImpl) BatchConsumeClientRequestLogEvent(ctx context.Co
 	requestLogList := new(entity.RequestLogList)
 	converter.ModelClientRequestLogEventListToEntityRequestLogList(&req.EventList, requestLogList)
 
-	err := r.RequestLogRepository.CreateAll(ctx, r.DB, requestLogList)
+	err := r.requestLogRepository.CreateAll(ctx, r.db, requestLogList)
 	if err != nil {
 		return errkit.AddFuncName(err)
 	}
@@ -42,16 +42,16 @@ func (r *RequestLogUsecaseImpl) incrementClientRequestCount(ctx context.Context,
 			continue
 		}
 
-		newCount, err := r.ClientRequestCountRepository.IncrementCount(ctx, r.DB, apiKey, timestamp, count)
+		newCount, err := r.clientRequestCountRepository.IncrementCount(ctx, r.db, apiKey, timestamp, count)
 		if err != nil {
 			x.Logger.WithContext(ctx).WithError(err).Warn()
 			continue
 		}
 
-		err = r.Cache.SetClientRequestCountIfExist(ctx, apiKey, timestamp, newCount)
+		err = r.cache.SetClientRequestCountIfExist(ctx, apiKey, timestamp, newCount)
 		x.LogIfErrContext(ctx, err)
 
-		err = r.Cache.IncrementTopClientRequestCountHourly(ctx, timestamp, count, apiKey)
+		err = r.cache.IncrementTopClientRequestCountHourly(ctx, timestamp, count, apiKey)
 		x.LogIfErrContext(ctx, err)
 	}
 }

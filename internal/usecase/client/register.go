@@ -25,7 +25,7 @@ func (c *ClientUsecaseImpl) Register(ctx context.Context, req *model.ReqRegister
 		return nil, errkit.AddFuncName(err)
 	}
 
-	err = c.ClientRepository.Create(ctx, c.DB, client)
+	err = c.clientRepository.Create(ctx, c.db, client)
 	if err != nil {
 		return nil, errkit.AddFuncName(err)
 	}

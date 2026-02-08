@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/converter"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/delivery/http/response"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
@@ -11,18 +12,17 @@ import (
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 type ClientController struct {
-	Config  *viper.Viper
-	Usecase client.ClientUsecase
+	cfg     *config.Config
+	usecase client.ClientUsecase
 }
 
-func NewClientController(cfg *viper.Viper, useCase client.ClientUsecase) *ClientController {
+func NewClientController(cfg *config.Config, usecase client.ClientUsecase) *ClientController {
 	return &ClientController{
-		Config:  cfg,
-		Usecase: useCase,
+		cfg:     cfg,
+		usecase: usecase,
 	}
 }
 
@@ -47,7 +47,7 @@ func (_c *ClientController) Register(c *gin.Context) {
 		return
 	}
 
-	res, err := _c.Usecase.Register(c.Request.Context(), req)
+	res, err := _c.usecase.Register(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
 		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()
@@ -79,7 +79,7 @@ func (_c *ClientController) Login(c *gin.Context) {
 		return
 	}
 
-	res, err := _c.Usecase.Login(c.Request.Context(), req)
+	res, err := _c.usecase.Login(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
 		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()

@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	viperConfig := config.NewViper()
-	x.SetupAll(viperConfig)
+	cfg := config.NewConfig()
+	x.SetupAll(cfg.GetLogLevel(), cfg.GetAESKey())
 
-	config.Migrate(viperConfig)
+	config.Migrate(cfg)
 }

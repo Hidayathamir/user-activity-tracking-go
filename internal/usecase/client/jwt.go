@@ -11,19 +11,19 @@ import (
 )
 
 func (c *ClientUsecaseImpl) signAccessToken(ctx context.Context, clientName string) (string, error) {
-	secret := c.Config.GetString(configkey.AuthJWTSecret)
+	secret := c.cfg.GetString(configkey.AuthJWTSecret)
 	if secret == "" {
 		err := fmt.Errorf("jwt secret is not configured")
 		return "", errkit.AddFuncName(err)
 	}
 
-	expireSeconds := c.Config.GetInt(configkey.AuthJWTExpireSeconds)
+	expireSeconds := c.cfg.GetInt(configkey.AuthJWTExpireSeconds)
 	if expireSeconds <= 0 {
 		err := fmt.Errorf("jwt expire seconds must be greater than zero")
 		return "", errkit.AddFuncName(err)
 	}
 
-	issuer := c.Config.GetString(configkey.AuthJWTIssuer)
+	issuer := c.cfg.GetString(configkey.AuthJWTIssuer)
 	now := time.Now().UTC()
 	claims := jwt.RegisteredClaims{
 		Subject:   clientName,
@@ -48,7 +48,7 @@ func (c *ClientUsecaseImpl) parseAccessToken(ctx context.Context, tokenString st
 		return "", errkit.AddFuncName(err)
 	}
 
-	secret := c.Config.GetString(configkey.AuthJWTSecret)
+	secret := c.cfg.GetString(configkey.AuthJWTSecret)
 	if secret == "" {
 		err := fmt.Errorf("jwt secret is not configured")
 		return "", errkit.AddFuncName(err)

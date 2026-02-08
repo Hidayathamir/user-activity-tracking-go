@@ -3,9 +3,9 @@ package client
 import (
 	"context"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -21,25 +21,25 @@ type ClientUsecase interface {
 var _ ClientUsecase = &ClientUsecaseImpl{}
 
 type ClientUsecaseImpl struct {
-	Config *viper.Viper
-	DB     *gorm.DB
+	cfg *config.Config
+	db  *gorm.DB
 
 	// repository
-	ClientRepository repository.ClientRepository
+	clientRepository repository.ClientRepository
 }
 
 func NewClientUsecase(
-	Config *viper.Viper,
-	DB *gorm.DB,
+	cfg *config.Config,
+	db *gorm.DB,
 
 	// repository
-	ClientRepository repository.ClientRepository,
+	clientRepository repository.ClientRepository,
 ) *ClientUsecaseImpl {
 	return &ClientUsecaseImpl{
-		Config: Config,
-		DB:     DB,
+		cfg: cfg,
+		db:  db,
 
 		// repository
-		ClientRepository: ClientRepository,
+		clientRepository: clientRepository,
 	}
 }

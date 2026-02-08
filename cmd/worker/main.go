@@ -10,35 +10,35 @@ import (
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/delivery/messaging/route"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/dependency_injection"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/configkey"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 func main() {
-	viperConfig := config.NewViper()
-	x.SetupAll(viperConfig)
+	cfg := config.NewConfig()
+	x.SetupAll(cfg.GetLogLevel(), cfg.GetAESKey())
 
-	db := config.NewDatabase(viperConfig)
+	db := config.NewDatabase(cfg)
 
-	rdb := config.NewRedis(viperConfig)
+	rdb := config.NewRedis(cfg)
 	defer x.PanicIfErrForDefer(rdb.Close)
 
 	var kafkaWriter *kafka.Writer = nil // we dont need kafka writer
 
-	usecases := config.SetupUsecases(viperConfig, db, rdb, kafkaWriter)
+	usecases := dependency_injection.SetupUsecases(cfg, db, rdb, kafkaWriter)
 
-	consumers := config.SetupConsumers(viperConfig, usecases)
+	consumers := dependency_injection.SetupConsumers(cfg, usecases)
 
 	topicHandler := route.Setup(consumers)
 
-	runWorker(viperConfig, topicHandler)
+	runWorker(cfg, topicHandler)
 }
 
-func runWorker(viperConfig *viper.Viper, topicHandler route.TopicHandler) {
-	groupID := viperConfig.GetString(configkey.KafkaGroupID)
+func runWorker(cfg *config.Config, topicHandler route.TopicHandler) {
+	groupID := cfg.GetString(configkey.KafkaGroupID)
 
 	localLogger := x.Logger.WithFields(logrus.Fields{
 		"groupID": groupID,
@@ -71,7 +71,7 @@ func runWorker(viperConfig *viper.Viper, topicHandler route.TopicHandler) {
 
 		go func(t string, h route.FuncSingleMsgHandler) {
 			defer wg.Done()
-			startConsumer(ctx, viperConfig, groupID, t, h)
+			startConsumer(ctx, cfg, groupID, t, h)
 		}(topicName, handler)
 	}
 
@@ -87,7 +87,7 @@ func runWorker(viperConfig *viper.Viper, topicHandler route.TopicHandler) {
 
 		go func(t string, bhc route.BatchHandlerConfig) {
 			defer wg.Done()
-			startBatchConsumer(ctx, viperConfig, groupID, t, bhc)
+			startBatchConsumer(ctx, cfg, groupID, t, bhc)
 		}(topicName, batchHandlerConfig)
 	}
 
@@ -98,14 +98,14 @@ func runWorker(viperConfig *viper.Viper, topicHandler route.TopicHandler) {
 }
 
 // startConsumer encapsulates the logic for a single topic consumer (processes messages one by one)
-func startConsumer(ctx context.Context, viperConfig *viper.Viper, groupID, topicName string, handler route.FuncSingleMsgHandler) {
+func startConsumer(ctx context.Context, cfg *config.Config, groupID, topicName string, handler route.FuncSingleMsgHandler) {
 	localLogger := x.Logger.WithFields(logrus.Fields{
 		"groupID": groupID,
 		"topic":   topicName,
 		"type":    "single consume",
 	})
 
-	kafkaReader := config.NewKafkaReader(viperConfig, groupID, topicName)
+	kafkaReader := config.NewKafkaReader(cfg, groupID, topicName)
 	defer func() {
 		localLogger.Debug("closing consumer")
 		err := kafkaReader.Close()
@@ -147,7 +147,7 @@ func startConsumer(ctx context.Context, viperConfig *viper.Viper, groupID, topic
 
 // startBatchConsumer encapsulates the logic for a batch topic consumer
 // It collects messages and processes them in batches based on batch size or flush interval
-func startBatchConsumer(ctx context.Context, viperConfig *viper.Viper, groupID, topicName string, bhc route.BatchHandlerConfig) {
+func startBatchConsumer(ctx context.Context, cfg *config.Config, groupID, topicName string, bhc route.BatchHandlerConfig) {
 	localLogger := x.Logger.WithFields(logrus.Fields{
 		"groupID":           groupID,
 		"topic":             topicName,
@@ -156,7 +156,7 @@ func startBatchConsumer(ctx context.Context, viperConfig *viper.Viper, groupID, 
 		"type":              "batch consume",
 	})
 
-	kafkaReader := config.NewKafkaReader(viperConfig, groupID, topicName)
+	kafkaReader := config.NewKafkaReader(cfg, groupID, topicName)
 	defer func() {
 		localLogger.Debug("closing consumer")
 		err := kafkaReader.Close()

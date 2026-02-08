@@ -3,24 +3,24 @@ package http
 import (
 	"net/http"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/delivery/http/response"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/usecase/requestlog"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 type RequestLogController struct {
-	Config  *viper.Viper
-	Usecase requestlog.RequestLogUsecase
+	cfg     *config.Config
+	usecase requestlog.RequestLogUsecase
 }
 
-func NewRequestLogController(cfg *viper.Viper, useCase requestlog.RequestLogUsecase) *RequestLogController {
+func NewRequestLogController(cfg *config.Config, usecase requestlog.RequestLogUsecase) *RequestLogController {
 	return &RequestLogController{
-		Config:  cfg,
-		Usecase: useCase,
+		cfg:     cfg,
+		usecase: usecase,
 	}
 }
 
@@ -48,7 +48,7 @@ func (r *RequestLogController) RecordAPIHit(c *gin.Context) {
 
 	req.Timestamp = req.Timestamp.UTC()
 
-	res, err := r.Usecase.RecordAPIHit(c.Request.Context(), req)
+	res, err := r.usecase.RecordAPIHit(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
 		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()
@@ -72,7 +72,7 @@ func (r *RequestLogController) RecordAPIHit(c *gin.Context) {
 func (r *RequestLogController) GetClientDailyRequestCount(c *gin.Context) {
 	req := new(model.ReqGetClientDailyRequestCount)
 
-	res, err := r.Usecase.GetClientDailyRequestCount(c.Request.Context(), req)
+	res, err := r.usecase.GetClientDailyRequestCount(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
 		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()
@@ -96,7 +96,7 @@ func (r *RequestLogController) GetClientDailyRequestCount(c *gin.Context) {
 func (r *RequestLogController) GetTop3ClientRequestCount24Hour(c *gin.Context) {
 	req := new(model.ReqGetTop3ClientRequestCount24Hour)
 
-	res, err := r.Usecase.GetTop3ClientRequestCount24Hour(c.Request.Context(), req)
+	res, err := r.usecase.GetTop3ClientRequestCount24Hour(c.Request.Context(), req)
 	if err != nil {
 		err = errkit.AddFuncName(err)
 		x.Logger.WithContext(c.Request.Context()).WithError(err).Error()

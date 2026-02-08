@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/dbretry"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -19,12 +19,12 @@ type RequestLogRepository interface {
 var _ RequestLogRepository = &RequestLogRepositoryImpl{}
 
 type RequestLogRepositoryImpl struct {
-	Config *viper.Viper
+	cfg *config.Config
 }
 
-func NewRequestLogRepository(cfg *viper.Viper) *RequestLogRepositoryImpl {
+func NewRequestLogRepository(cfg *config.Config) *RequestLogRepositoryImpl {
 	return &RequestLogRepositoryImpl{
-		Config: cfg,
+		cfg: cfg,
 	}
 }
 

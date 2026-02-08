@@ -4,7 +4,6 @@ import (
 	"time"
 
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
-	"github.com/spf13/viper"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +16,7 @@ func errorHandler(c *gin.Context, info ratelimit.Info) {
 	c.String(429, "Too many requests. Try again in "+time.Until(info.ResetTime).String())
 }
 
-func NewGinEngine(viperConfig *viper.Viper) *gin.Engine {
+func NewGinEngine(cfg *Config) *gin.Engine {
 	ginEngine := gin.Default()
 
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{

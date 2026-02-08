@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/gateway/messaging"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -23,49 +23,49 @@ type RequestLogUsecase interface {
 var _ RequestLogUsecase = &RequestLogUsecaseImpl{}
 
 type RequestLogUsecaseImpl struct {
-	Config *viper.Viper
-	DB     *gorm.DB
+	cfg *config.Config
+	db  *gorm.DB
 
 	// cache
-	Cache cache.Cache
+	cache cache.Cache
 
 	// repository
-	RequestLogRepository         repository.RequestLogRepository
-	ClientRequestCountRepository repository.ClientRequestCountRepository
-	ClientRepository             repository.ClientRepository
+	requestLogRepository         repository.RequestLogRepository
+	clientRequestCountRepository repository.ClientRequestCountRepository
+	clientRepository             repository.ClientRepository
 
-	// Producer
-	Producer messaging.Producer
+	// producer
+	producer messaging.Producer
 }
 
 func NewRequestLogUsecase(
-	Config *viper.Viper,
-	DB *gorm.DB,
+	cfg *config.Config,
+	db *gorm.DB,
 
 	// cache
-	Cache cache.Cache,
+	cache cache.Cache,
 
 	// repository
-	RequestLogRepository repository.RequestLogRepository,
-	ClientRequestCountRepository repository.ClientRequestCountRepository,
-	ClientRepository repository.ClientRepository,
+	requestLogRepository repository.RequestLogRepository,
+	clientRequestCountRepository repository.ClientRequestCountRepository,
+	clientRepository repository.ClientRepository,
 
 	// Producer
-	Producer messaging.Producer,
+	producer messaging.Producer,
 ) *RequestLogUsecaseImpl {
 	return &RequestLogUsecaseImpl{
-		Config: Config,
-		DB:     DB,
+		cfg: cfg,
+		db:  db,
 
 		// cache
-		Cache: Cache,
+		cache: cache,
 
 		// repository
-		RequestLogRepository:         RequestLogRepository,
-		ClientRequestCountRepository: ClientRequestCountRepository,
-		ClientRepository:             ClientRepository,
+		requestLogRepository:         requestLogRepository,
+		clientRequestCountRepository: clientRequestCountRepository,
+		clientRepository:             clientRepository,
 
 		// Producer
-		Producer: Producer,
+		producer: producer,
 	}
 }

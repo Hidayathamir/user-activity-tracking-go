@@ -1,4 +1,4 @@
-package config
+package dependency_injection
 
 import (
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/delivery/http/middleware"

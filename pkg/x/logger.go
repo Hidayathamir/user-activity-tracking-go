@@ -1,17 +1,15 @@
 package x
 
 import (
-	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/configkey"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
-var Logger = logrus.New()
+var Logger *logrus.Logger
 
-func SetupLogger(viperConfig *viper.Viper) {
+func SetupLogger(logLevel string) {
 	logger := logrus.New()
 
-	lvl, err := logrus.ParseLevel(viperConfig.GetString(configkey.LogLevel))
+	lvl, err := logrus.ParseLevel(logLevel)
 	if err != nil {
 		lvl = logrus.InfoLevel
 	}

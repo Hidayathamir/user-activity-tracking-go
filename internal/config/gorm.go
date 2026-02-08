@@ -5,24 +5,22 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/configkey"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-func NewDatabase(viperConfig *viper.Viper) *gorm.DB {
-	username := viperConfig.GetString(configkey.DatabaseUsername)
-	password := viperConfig.GetString(configkey.DatabasePassword)
-	host := viperConfig.GetString(configkey.DatabaseHost)
-	port := viperConfig.GetInt(configkey.DatabasePort)
-	database := viperConfig.GetString(configkey.DatabaseName)
-	idleConnection := viperConfig.GetInt(configkey.DatabasePoolIdle)
-	maxConnection := viperConfig.GetInt(configkey.DatabasePoolMax)
-	maxLifeTimeConnection := viperConfig.GetInt(configkey.DatabasePoolLifetime)
+func NewDatabase(cfg *Config) *gorm.DB {
+	username := cfg.GetDatabaseUsername()
+	password := cfg.GetDatabasePassword()
+	host := cfg.GetDatabaseHost()
+	port := cfg.GetDatabasePort()
+	database := cfg.GetDatabaseName()
+	idleConnection := cfg.GetDatabasePoolIdle()
+	maxConnection := cfg.GetDatabasePoolMax()
+	maxLifeTimeConnection := cfg.GetDatabasePoolLifetime()
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=UTC", host, port, username, password, database)
 

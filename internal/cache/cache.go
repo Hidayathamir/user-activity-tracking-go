@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/converter"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/cachekey"
@@ -12,7 +13,6 @@ import (
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 //go:generate moq -out=../mock/MockCache.go -pkg=mock . Cache
@@ -28,14 +28,14 @@ type Cache interface {
 var _ Cache = &CacheImpl{}
 
 type CacheImpl struct {
-	Config     *viper.Viper
+	cfg        *config.Config
 	rdb        *redis.Client
 	inMemCache *expirable.LRU[string, int]
 }
 
-func NewCache(cfg *viper.Viper, rdb *redis.Client, inMemCache *expirable.LRU[string, int]) *CacheImpl {
+func NewCache(cfg *config.Config, rdb *redis.Client, inMemCache *expirable.LRU[string, int]) *CacheImpl {
 	return &CacheImpl{
-		Config:     cfg,
+		cfg:        cfg,
 		rdb:        rdb,
 		inMemCache: inMemCache,
 	}

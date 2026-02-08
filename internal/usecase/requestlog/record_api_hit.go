@@ -19,7 +19,7 @@ func (r *RequestLogUsecaseImpl) RecordAPIHit(ctx context.Context, req *model.Req
 	event := new(model.ClientRequestLogEvent)
 	converter.ModelReqRecordAPIHitToModelClientRequestLogEvent(req, event)
 
-	err = r.Producer.SendClientRequestLogEvent(ctx, event)
+	err = r.producer.SendClientRequestLogEvent(ctx, event)
 	if err != nil {
 		err = errkit.BadRequest(err)
 		return nil, errkit.AddFuncName(err)

@@ -60,18 +60,18 @@ func (r *RequestLogUsecaseImpl) GetClientDailyRequestCount(ctx context.Context, 
 }
 
 func (r *RequestLogUsecaseImpl) getCountByAPIKeyAndDate(ctx context.Context, apiKey string, datetime time.Time, ttl time.Duration) (int, error) {
-	count, err := r.Cache.GetCountByAPIKeyAndDate(ctx, apiKey, datetime)
+	count, err := r.cache.GetCountByAPIKeyAndDate(ctx, apiKey, datetime)
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return 0, errkit.AddFuncName(err)
 	}
 
 	if errors.Is(err, redis.Nil) {
-		count, err = r.ClientRequestCountRepository.GetCountByAPIKeyAndDate(ctx, r.DB, apiKey, datetime)
+		count, err = r.clientRequestCountRepository.GetCountByAPIKeyAndDate(ctx, r.db, apiKey, datetime)
 		if err != nil {
 			return 0, errkit.AddFuncName(err)
 		}
 
-		err = r.Cache.SetClientRequestCount(ctx, apiKey, datetime, count, ttl)
+		err = r.cache.SetClientRequestCount(ctx, apiKey, datetime, count, ttl)
 		x.LogIfErrContext(ctx, err)
 	}
 

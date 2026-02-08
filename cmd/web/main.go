@@ -4,6 +4,7 @@ import (
 	_ "github.com/Hidayathamir/user-activity-tracking-go/api" // need import for swagger
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/delivery/http/route"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/dependency_injection"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 )
 
@@ -23,24 +24,24 @@ import (
 //	@description				X Internal Secret
 
 func main() {
-	viperConfig := config.NewViper()
-	x.SetupAll(viperConfig)
+	cfg := config.NewConfig()
+	x.SetupAll(cfg.GetLogLevel(), cfg.GetAESKey())
 
-	db := config.NewDatabase(viperConfig)
+	db := config.NewDatabase(cfg)
 
-	rdb := config.NewRedis(viperConfig)
+	rdb := config.NewRedis(cfg)
 	defer x.PanicIfErrForDefer(rdb.Close)
 
-	kafkaWriter := config.NewKafkaWriter(viperConfig)
+	kafkaWriter := config.NewKafkaWriter(cfg)
 	defer x.PanicIfErrForDefer(kafkaWriter.Close)
 
-	usecases := config.SetupUsecases(viperConfig, db, rdb, kafkaWriter)
+	usecases := dependency_injection.SetupUsecases(cfg, db, rdb, kafkaWriter)
 
-	controllers := config.SetupControllers(viperConfig, usecases)
+	controllers := dependency_injection.SetupControllers(cfg, usecases)
 
-	middlewares := config.SetupMiddlewares(usecases)
+	middlewares := dependency_injection.SetupMiddlewares(usecases)
 
-	ginEngine := config.NewGinEngine(viperConfig)
+	ginEngine := config.NewGinEngine(cfg)
 
 	route.Setup(ginEngine, controllers, middlewares)
 

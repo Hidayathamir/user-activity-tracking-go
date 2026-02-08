@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/configkey"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
 	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
-func NewKafkaWriter(viperConfig *viper.Viper) *kafka.Writer {
-	address := viperConfig.GetString(configkey.KafkaAddress)
+func NewKafkaWriter(cfg *Config) *kafka.Writer {
+	address := cfg.GetKafkaAddress()
 
 	waitForKafka(address, 30, 2*time.Second)
 
@@ -25,8 +23,8 @@ func NewKafkaWriter(viperConfig *viper.Viper) *kafka.Writer {
 	return kafkaWriter
 }
 
-func NewKafkaReader(viperConfig *viper.Viper, groupID string, topic string) *kafka.Reader {
-	address := viperConfig.GetString(configkey.KafkaAddress)
+func NewKafkaReader(cfg *Config, groupID string, topic string) *kafka.Reader {
+	address := cfg.GetKafkaAddress()
 
 	waitForKafka(address, 30, 2*time.Second)
 

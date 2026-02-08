@@ -3,14 +3,12 @@ package config
 import (
 	"time"
 
-	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/configkey"
 	"github.com/redis/go-redis/v9"
-	"github.com/spf13/viper"
 )
 
-func NewRedis(viperConfig *viper.Viper) *redis.Client {
+func NewRedis(cfg *Config) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:            viperConfig.GetString(configkey.RedisAddress),
+		Addr:            cfg.GetRedisAddress(),
 		MaxRetries:      3,
 		MinRetryBackoff: 8 * time.Millisecond,
 	})

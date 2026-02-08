@@ -17,7 +17,7 @@ func (c *ClientUsecaseImpl) Login(ctx context.Context, req *model.ReqLogin) (*mo
 	}
 
 	client := new(entity.Client)
-	err = c.ClientRepository.FindByName(ctx, c.DB, client, req.Name)
+	err = c.clientRepository.FindByName(ctx, c.db, client, req.Name)
 	if err != nil {
 		return nil, errkit.AddFuncName(err)
 	}

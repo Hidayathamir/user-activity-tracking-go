@@ -23,7 +23,7 @@ func (c *ClientUsecaseImpl) Verify(ctx context.Context, req *model.ReqVerify) (*
 	}
 
 	client := new(entity.Client)
-	err = c.ClientRepository.FindByName(ctx, c.DB, client, clientName)
+	err = c.clientRepository.FindByName(ctx, c.db, client, clientName)
 	if err != nil {
 		return nil, errkit.AddFuncName(err)
 	}

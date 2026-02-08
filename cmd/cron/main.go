@@ -10,7 +10,6 @@ import (
 
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/cachekey"
-	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/configkey"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/timekit"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/x"
@@ -19,15 +18,15 @@ import (
 )
 
 func main() {
-	viperConfig := config.NewViper()
-	x.SetupAll(viperConfig)
+	cfg := config.NewConfig()
+	x.SetupAll(cfg.GetLogLevel(), cfg.GetAESKey())
 
-	rdb := config.NewRedis(viperConfig)
+	rdb := config.NewRedis(cfg)
 	defer x.PanicIfErrForDefer(rdb.Close)
 
 	myCron := cron.New()
 
-	pattern := viperConfig.GetString(configkey.CronPattern)
+	pattern := cfg.GetCronPattern()
 
 	_, err := myCron.AddFunc(pattern, func() {
 		x.Logger.Info("running unionTopClients job")

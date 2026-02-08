@@ -5,11 +5,11 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/constant/column"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/dbretry"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -24,12 +24,12 @@ type ClientRepository interface {
 var _ ClientRepository = &ClientRepositoryImpl{}
 
 type ClientRepositoryImpl struct {
-	Config *viper.Viper
+	cfg *config.Config
 }
 
-func NewClientRepository(cfg *viper.Viper) *ClientRepositoryImpl {
+func NewClientRepository(cfg *config.Config) *ClientRepositoryImpl {
 	return &ClientRepositoryImpl{
-		Config: cfg,
+		cfg: cfg,
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/converter"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
@@ -12,7 +13,6 @@ import (
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/dbretry"
 	"github.com/Hidayathamir/user-activity-tracking-go/pkg/errkit"
 	sq "github.com/Masterminds/squirrel"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -27,12 +27,12 @@ type ClientRequestCountRepository interface {
 var _ ClientRequestCountRepository = &ClientRequestCountRepositoryImpl{}
 
 type ClientRequestCountRepositoryImpl struct {
-	Config *viper.Viper
+	cfg *config.Config
 }
 
-func NewClientRequestCountRepository(cfg *viper.Viper) *ClientRequestCountRepositoryImpl {
+func NewClientRequestCountRepository(cfg *config.Config) *ClientRequestCountRepositoryImpl {
 	return &ClientRequestCountRepositoryImpl{
-		Config: cfg,
+		cfg: cfg,
 	}
 }
 
