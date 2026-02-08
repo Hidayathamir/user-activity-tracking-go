@@ -141,28 +141,30 @@ make format
 
 ```
 .
-├── api/                    # Swagger generated files
+├── api/                      # Swagger generated files
 ├── cmd/
-│   ├── web/               # HTTP API server entrypoint
-│   ├── worker/            # Kafka consumer entrypoint
-│   ├── cron/              # Cron scheduler entrypoint
-│   └── migrate/           # Database migration runner
+│   ├── web/                  # HTTP API server entrypoint
+│   ├── worker/               # Kafka consumer entrypoint
+│   ├── cron/                 # Cron scheduler entrypoint
+│   └── migrate/              # Database migration runner
 ├── db/
-│   └── migrations/        # SQL migration files
+│   └── migrations/           # SQL migration files
 ├── internal/
-│   ├── cache/             # Redis cache layer
-│   ├── config/            # Configuration setup
-│   ├── converter/         # DTO converters
-│   ├── delivery/          # HTTP handlers & Kafka consumers
-│   ├── entity/            # Database entities
-│   ├── gateway/           # External service integrations
-│   ├── model/             # Request/response models
-│   ├── repository/        # Database repositories
-│   └── usecase/           # Business logic
-├── pkg/                   # Shared utilities and constants
-├── config.json            # Application configuration
-├── docker-compose.yml     # Infrastructure services
-└── Makefile              # Build and run commands
+│   ├── config/               # Configuration setup
+│   ├── converter/            # DTO converters
+│   ├── delivery/             # HTTP handlers & Kafka consumers
+│   ├── dependency_injection/ # DI container for wiring components
+│   ├── entity/               # Database entities
+│   ├── infra/                # Infrastructure layer
+│   │   ├── cache/            # Redis cache with in-memory fallback
+│   │   ├── messaging/        # Kafka producer
+│   │   └── repository/       # Database repositories
+│   ├── model/                # Request/response models
+│   └── usecase/              # Business logic
+├── pkg/                      # Shared utilities and constants
+├── config.json               # Application configuration
+├── docker-compose.yml        # Infrastructure services
+└── Makefile                  # Build and run commands
 ```
 
 ## Services (Docker Compose)
