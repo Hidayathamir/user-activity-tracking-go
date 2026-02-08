@@ -3,10 +3,10 @@ package dependency_injection
 import (
 	"time"
 
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/config"
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/gateway/messaging"
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/infra/cache"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/infra/messaging"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/infra/repository"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/usecase/client"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/usecase/requestlog"
 	"github.com/hashicorp/golang-lru/v2/expirable"

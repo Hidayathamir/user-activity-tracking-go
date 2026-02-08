@@ -6,7 +6,7 @@ package mock
 import (
 	"context"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/entity"
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/repository"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/infra/repository"
 	"gorm.io/gorm"
 	"sync"
 )

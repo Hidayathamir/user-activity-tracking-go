@@ -5,7 +5,7 @@ package mock
 
 import (
 	"context"
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/cache"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/infra/cache"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"sync"
 	"time"

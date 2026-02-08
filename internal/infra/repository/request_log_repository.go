@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:generate moq -out=../mock/MockRepositoryRequestLog.go -pkg=mock . RequestLogRepository
+//go:generate moq -out=../../mock/MockRepositoryRequestLog.go -pkg=mock . RequestLogRepository
 
 type RequestLogRepository interface {
 	CreateAll(ctx context.Context, db *gorm.DB, requestLogList *entity.RequestLogList) error

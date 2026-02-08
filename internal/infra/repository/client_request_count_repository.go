@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:generate moq -out=../mock/MockRepositoryClientRequestCount.go -pkg=mock . ClientRequestCountRepository
+//go:generate moq -out=../../mock/MockRepositoryClientRequestCount.go -pkg=mock . ClientRequestCountRepository
 
 type ClientRequestCountRepository interface {
 	IncrementCount(ctx context.Context, db *gorm.DB, apiKey string, datetime time.Time, count int) (int, error)

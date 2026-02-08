@@ -15,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//go:generate moq -out=../mock/MockCache.go -pkg=mock . Cache
+//go:generate moq -out=../../mock/MockCache.go -pkg=mock . Cache
 
 type Cache interface {
 	SetClientRequestCountIfExist(ctx context.Context, apiKey string, datetime time.Time, value int) error

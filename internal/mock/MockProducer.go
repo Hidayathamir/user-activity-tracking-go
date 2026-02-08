@@ -5,7 +5,7 @@ package mock
 
 import (
 	"context"
-	"github.com/Hidayathamir/user-activity-tracking-go/internal/gateway/messaging"
+	"github.com/Hidayathamir/user-activity-tracking-go/internal/infra/messaging"
 	"github.com/Hidayathamir/user-activity-tracking-go/internal/model"
 	"sync"
 )
